@@ -1,115 +1,160 @@
-# Arcade Arena
+<div align="center">
 
-Eine virtuelle Spielhalle im Browser. Man läuft durch eine Neon-Halle, stellt sich vor einen Automaten, drückt Enter und spielt. Keine Anmeldung, kein Download, keine Einarbeitung, Highscore-Tafel mit drei Initialen wie früher.
+<img src="public/og-image.png" alt="The Arcade Arena hall: a neon arcade seen from above with twelve cabinets" width="820" />
 
-Gedacht vor allem für Spielerinnen und Spieler, die mit klassischen Arcade-Spielen aufgewachsen sind: große Schrift, hoher Kontrast, überall dieselbe Steuerung, kurze Runden.
+# 🕹️ Arcade Arena
 
-**Live:** https://arcadearena.sfalter.de
+**Classic arcade games. No manual required.**
 
-## Die Spiele
+Walk into a neon arcade hall in your browser, step up to a cabinet, press Enter and play.<br/>
+No sign-up, no download, high score tables with three-letter initials, just like back in the day.
 
-Alle Spiele sind eigene Umsetzungen klassischer Spielprinzipien, mit eigenen Namen, Grafiken und Sounds.
+[![Play now](https://img.shields.io/badge/%E2%96%B6%20PLAY%20NOW-arcadearena.sfalter.de-ff4fd8?style=for-the-badge&labelColor=160b20)](https://arcadearena.sfalter.de)
 
-| Automat | Im Stil von | Steuerung |
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
+![Canvas 2D](https://img.shields.io/badge/Canvas-2D-3df5ff?style=flat-square&labelColor=160b20)
+![WebAudio](https://img.shields.io/badge/Sound-WebAudio-5dff6a?style=flat-square&labelColor=160b20)
+![No runtime dependencies](https://img.shields.io/badge/runtime%20deps-0-ffe23d?style=flat-square&labelColor=160b20)
+
+</div>
+
+---
+
+## ✨ Why Arcade Arena?
+
+Modern games often want hours of tutorials, and after a week away you have forgotten everything. Arcade Arena works the other way round: **walk up, play a round, walk away.**
+
+|   |   |
+|---|---|
+| 🔠 **Large, clear text** | Big pixel lettering and strong contrast on every screen |
+| 🎮 **Two buttons, no menus** | Arrow keys plus one or two buttons, the same in every game |
+| ⏱️ **Short rounds** | Two to ten minutes, nothing to save, nothing to unlock |
+| 🏆 **High score tables** | Top 10 per cabinet with your three initials |
+| 🕹️ **Keyboard or gamepad** | Xbox, PlayStation and Switch Pro controllers work out of the box |
+| 🎬 **Attract mode** | Every cabinet plays a demo of itself while it waits for you |
+
+## 👾 The cabinets
+
+Twelve original games, each inspired by a golden-age classic, with their own names, graphics and sounds.
+
+| | Cabinet | In the spirit of | Controls |
+|:-:|---|---|---|
+| 👽 | **Cosmic Siege** | Space Invaders | `←` `→` move · `Space` fire |
+| 🚀 | **Star Run** | 3D cockpit rail shooter | arrows steer · `Space` fire · `Shift` bomb |
+| ☄️ | **Rock Buster** | Asteroids | `←` `→` turn · `↑` thrust · `Space` fire · `Shift` warp |
+| 🏙️ | **City Defender** | Missile Command | arrows aim · `Space` fire |
+| 🐛 | **Garden Guard** | Centipede | arrows move · `Space` fire |
+| 🌙 | **Moon Lander** | Lunar Lander | `←` `→` turn · `Space` thrust |
+| 🟡 | **Maze Muncher** | Pac-Man | arrows |
+| 🐍 | **Neon Serpent** | Snake | arrows |
+| 🐸 | **Road Hopper** | Frogger | arrows |
+| 🧱 | **Brick Blaster** | Breakout | `←` `→` move · `Space` launch |
+| 💎 | **Gem Cascade** | Columns | `←` `→` move · `↓` faster · `Space` swap · `Shift` drop |
+| 🏓 | **Paddle Duel** | Pong (vs. the computer) | `↑` `↓` |
+
+## 🎮 Controls
+
+The same layout in every game:
+
+| Action | Keyboard | Gamepad |
 |---|---|---|
-| Cosmic Siege | Space Invaders | ←→ bewegen, Leertaste feuern |
-| Star Run | Cockpit-Rail-Shooter (3D-Wireframe) | Pfeile lenken, Leertaste feuern, Shift Bombe |
-| Rock Buster | Asteroids | ←→ drehen, ↑ Schub, Leertaste feuern, Shift Warp |
-| City Defender | Missile Command | Pfeile zielen, Leertaste feuern |
-| Garden Guard | Centipede | Pfeile bewegen, Leertaste feuern |
-| Moon Lander | Lunar Lander | ←→ drehen, Leertaste Schub |
-| Maze Muncher | Pac-Man | Pfeile |
-| Neon Serpent | Snake | Pfeile |
-| Road Hopper | Frogger | Pfeile |
-| Brick Blaster | Breakout | ←→ bewegen, Leertaste Ball starten |
-| Gem Cascade | Columns | ←→ bewegen, ↓ schneller, Leertaste tauschen, Shift fallen lassen |
-| Paddle Duel | Pong (gegen den Computer) | ↑↓ |
+| Walk / move | `←` `↑` `→` `↓` or `W` `A` `S` `D` | D-pad or left stick |
+| Button 1 | `Space` | `A` / `X` |
+| Button 2 | `Shift` | `B` / `Y` |
+| Start / pause | `Enter` (or `P` to pause) | `Start` |
+| Back to the hall | `Esc` (asks first during a game) | `Select` / `Back` |
+| Sound on/off | `M` (hall and pause menu) | |
+| Fullscreen | `F` (in the hall) | |
 
-## Bedienung
+🖱️ In the hall you can also use the mouse: click a cabinet and your character walks over and starts the game. Walk out through the **EXIT** door to get back to the homepage.
 
-| | Tastatur | Gamepad |
-|---|---|---|
-| Laufen / bewegen | Pfeiltasten oder WASD | Steuerkreuz oder linker Stick |
-| Aktion 1 | Leertaste | A / X |
-| Aktion 2 | Shift | B / Y |
-| Spiel starten, Pause | Enter (Pause auch mit P) | Start |
-| Zurück in die Halle | Esc (im Spiel mit Rückfrage) | Select / Back |
-| Ton an/aus | M (in der Halle und im Pausenmenü) | |
-| Vollbild | F (in der Halle) | |
+## 🚀 Getting started
 
-In der Halle reicht auch die Maus: Ein Klick auf einen Automaten lässt die Figur hinlaufen und startet das Spiel. Durch die EXIT-Tür geht es zurück zur Startseite.
-
-## Entwicklung
-
-Voraussetzung: Node.js (getestet mit Node 24).
+Requires [Node.js](https://nodejs.org/) (developed with Node 24).
 
 ```bash
 npm install
-npm run dev       # Entwicklungsserver
-npm run build     # Typprüfung + Produktions-Build nach dist/
-npm run preview   # fertigen Build lokal ansehen
+npm run dev       # start the dev server
+npm run build     # type check + production build into dist/
+npm run preview   # serve the production build locally
 ```
 
-Die Seite hat zwei Einstiegspunkte:
+The site has two entry points:
 
-- `/` (`index.html`): Landingpage mit Live-Vorschauen der Spiele, FAQ und strukturierten Daten
-- `/play/` (`play/index.html`): die Spielhalle
+| Path | File | What it is |
+|---|---|---|
+| `/` | `index.html` | Landing page with live game previews, FAQ and structured data |
+| `/play/` | `play/index.html` | The arcade hall |
 
-## Technik
+## 🛠️ Under the hood
 
-- TypeScript und Vite, ohne Framework und ohne Laufzeit-Abhängigkeiten
-- Canvas 2D mit fester interner Auflösung (384×288), pixelgenau hochskaliert, mit CRT-Effekt (Scanlines, Vignette, Neon-Glühen)
-- Sound komplett mit WebAudio synthetisiert, keine Audiodateien
-- Highscores (Top 10 pro Spiel) und Einstellungen in `localStorage`, nichts wird an einen Server geschickt
-- Schriften selbst gehostet über Fontsource (Pixelify Sans, Atkinson Hyperlegible)
+- **TypeScript + Vite**, no framework, zero runtime dependencies
+- **Canvas 2D** at a fixed 384×288 resolution, scaled up to fill the window, with a CRT look (scanlines, vignette, neon bloom)
+- **WebAudio** synthesizes every sound effect and loop; there are no audio files
+- **localStorage** keeps high scores and settings; nothing is sent to a server
+- **Self-hosted fonts** via Fontsource (Pixelify Sans, Atkinson Hyperlegible)
 
-### Ordnerstruktur
+<details>
+<summary><b>📁 Project structure</b></summary>
 
 ```text
-index.html            Landingpage
-play/index.html       Spielhalle
+index.html              landing page
+play/index.html         arcade hall
 src/
-  main.ts             Einstieg der Halle: Szenenwechsel Halle ↔ Spiel
-  engine/             Gemeinsame Bausteine
-    loop.ts             Game-Loop mit festem Zeitschritt (60 Hz)
-    input.ts            Tastatur, Maus, Gamepad
-    sound.ts, sfx.ts    WebAudio-Synthese, Endlos-Sounds, gemeinsame Effekte
-    shell.ts            Automaten-Ablauf: Titel, Demo, Pause, Game Over, Initialen, Highscores
-    autopilot.ts        "Demo-Spieler" für den Attract-Mode
-    font.ts, draw.ts    Bitmap-Font, Sprites, pixelgenaue Linien
-    screen.ts           Skalierung, CRT-Effekt, Vollbild
-    highscores.ts       Highscore-Tafeln
-  hall/hall.ts        Die begehbare Halle
-  games/<name>/       Ein Ordner pro Spiel (index.ts + round.ts, ggf. Sprites/Sounds)
-  games/registry.ts   Aufstellung der Automaten in der Halle
-  landing/            Script und Styles der Landingpage
+  main.ts               hall entry point: switches between hall and games
+  engine/               shared building blocks
+    loop.ts               fixed-timestep game loop (60 Hz)
+    input.ts              keyboard, mouse, gamepad
+    sound.ts, sfx.ts      WebAudio synthesis, looping sounds, shared effects
+    shell.ts              cabinet flow: title, demo, pause, game over, initials, high scores
+    autopilot.ts          "demo player" for attract mode
+    font.ts, draw.ts      bitmap font, sprites, pixel-perfect lines
+    screen.ts             scaling, CRT effects, fullscreen
+    highscores.ts         high score tables
+  hall/hall.ts          the walkable arcade hall
+  games/<name>/         one folder per game (index.ts + round.ts, sometimes sprites/sounds)
+  games/registry.ts     which cabinets stand where in the hall
+  landing/              landing page script and styles
 scripts/
-  add-landing-game.mjs  trägt ein neues Spiel auf der Landingpage ein
+  add-landing-game.mjs  adds a new game to the landing page
 ```
 
-## Ein neues Spiel hinzufügen
+</details>
 
-Jedes Spiel liefert nur seine eigentliche Spielrunde. Titelbildschirm, Demo-Modus, Pause, Game Over, Initialen-Eingabe und Highscore-Tafel kommen automatisch aus `CabinetShell`.
+## ➕ Adding a game
 
-1. **Spielrunde** in `src/games/<name>/round.ts`: eine Klasse, die `Round` aus `src/engine/shell.ts` umsetzt (`update(dt)`, `render(g)`, `score`, `over`). Eingaben kommen über `env.input`, Sound über `env.audio`. Dadurch funktioniert der Demo-Modus mit Autopilot ohne Zusatzaufwand.
-2. **Automat** in `src/games/<name>/index.ts`: ein `CabinetInfo` (Name, Kurzbeschreibung, Farben, Steuerung, kleine Demo für den Automatenbildschirm) und eine `GameDefinition` (Anleitung, optionale Punktetabelle, `createRound`).
-3. **Aufstellen** in `src/games/registry.ts`: den Automaten in `CABINETS` eintragen. Die Halle hat 6 Automaten pro Reihe und wächst automatisch um weitere Reihen.
-4. **Landingpage**: eine kleine JSON-Datei mit Titel, Beschreibung, Tasten usw. anlegen und
+Each game only provides its actual round of play. Title screen, demo mode, pause, game over, initials entry and the high score table all come from `CabinetShell` for free.
+
+1. **Round** in `src/games/<name>/round.ts`: a class implementing `Round` from `src/engine/shell.ts` (`update(dt)`, `render(g)`, `score`, `over`). Read input through `env.input` and play sounds through `env.audio`, so the attract-mode autopilot works without extra code.
+2. **Cabinet** in `src/games/<name>/index.ts`: a `CabinetInfo` (name, tagline, colors, controls, tiny demo for the cabinet screen) and a `GameDefinition` (how-to text, optional score table, `createRound`).
+3. **Place it** in `src/games/registry.ts` by adding it to `CABINETS`. The hall holds six cabinets per row and grows new rows automatically.
+4. **Landing page**: write a small JSON spec (title, description, keys and so on) and run
 
    ```bash
-   node scripts/add-landing-game.mjs pfad/zur/spec.json
+   node scripts/add-landing-game.mjs path/to/spec.json
    ```
 
-   ausführen. Das Skript ergänzt Spielkachel mit Live-Vorschau, strukturierte Daten (JSON-LD), `llms.txt` und die Vorschau-Zuordnung. Es lässt sich gefahrlos wiederholen. Welche Felder die JSON-Datei braucht, steht im Kopf des Skripts.
+   It adds the game card with a live preview, the JSON-LD entry, the `llms.txt` line and the preview wiring. Running it twice is safe. The expected fields are listed at the top of the script.
 
-Designregeln für alle Spiele (siehe `PLAN.md`): Pfeiltasten plus höchstens zwei Aktionstasten, in fünf Sekunden verständlich, Runden von 2 bis 10 Minuten, gut lesbare Schrift.
+> [!TIP]
+> Design rules for every game (see `PLAN.md`): arrow keys plus at most two buttons, understandable within five seconds, rounds of two to ten minutes, easy-to-read text.
 
-## Veröffentlichen
+## 🌐 Deployment
 
-`npm run build` erzeugt eine rein statische Seite in `dist/`, die auf jedem statischen Hosting läuft (z. B. Cloudflare Pages, Netlify, GitHub Pages).
+`npm run build` produces a fully static site in `dist/` that runs on any static host (Cloudflare Pages, Netlify, GitHub Pages and so on).
 
-Die öffentliche Adresse `https://arcadearena.sfalter.de` steht fest in `index.html`, `play/index.html`, `vite.config.ts` und `scripts/add-landing-game.mjs`. Sie wird für Canonical-Links, Open Graph, strukturierte Daten, `sitemap.xml`, `robots.txt` und `llms.txt` verwendet. `sitemap.xml`, `robots.txt` und `llms.txt` erzeugt `vite.config.ts` beim Build.
+> [!NOTE]
+> The public address `https://arcadearena.sfalter.de` is hardcoded in `index.html`, `play/index.html`, `vite.config.ts` and `scripts/add-landing-game.mjs`. It is used for canonical links, Open Graph, structured data, `sitemap.xml`, `robots.txt` and `llms.txt`. The last three are generated by `vite.config.ts` during the build.
 
-## Rechtliches
+## ⚖️ Legal
 
-Arcade Arena ist ein unabhängiges Hobbyprojekt. Spielmechaniken sind frei verwendbar, deshalb haben alle Spiele eigene Namen, Grafiken und Sounds. Space Invaders, Pac-Man, Asteroids, Breakout, Pong, Frogger, Missile Command, Centipede, Lunar Lander und Columns sind Marken ihrer jeweiligen Inhaber; Arcade Arena steht mit ihnen in keiner Verbindung.
+Arcade Arena is an independent hobby project. Game mechanics are free to use, so every game has its own name, graphics and sounds. Space Invaders, Pac-Man, Asteroids, Breakout, Pong, Frogger, Missile Command, Centipede, Lunar Lander and Columns are trademarks of their respective owners. Arcade Arena is not affiliated with them.
+
+<div align="center">
+
+---
+
+**Insert coin to continue** 🪙
+
+</div>
