@@ -15,6 +15,7 @@ import { roadHopperGame } from '../games/road-hopper';
 import { cityDefenderGame } from '../games/city-defender';
 import { gemCascadeGame } from '../games/gem-cascade';
 import { moonLanderGame } from '../games/moon-lander';
+import { gardenGuardGame } from '../games/garden-guard';
 // more-imports
 import { Hall } from '../hall/hall';
 
@@ -87,6 +88,7 @@ const GAMES: Record<string, GameDefinition> = {
   'city-defender': cityDefenderGame,
   'gem-cascade': gemCascadeGame,
   'moon-lander': moonLanderGame,
+  'garden-guard': gardenGuardGame,
   // more-previews
 };
 
