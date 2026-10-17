@@ -7,6 +7,8 @@ import { cosmicSiegeGame } from '../games/cosmic-siege';
 import { mazeMuncherGame } from '../games/maze-muncher';
 import { CABINETS } from '../games/registry';
 import { starRunGame } from '../games/star-run';
+import { brickBlasterGame } from '../games/brick-blaster';
+// more-imports
 import { Hall } from '../hall/hall';
 
 /**
@@ -70,6 +72,8 @@ const GAMES: Record<string, GameDefinition> = {
   'cosmic-siege': cosmicSiegeGame,
   'maze-muncher': mazeMuncherGame,
   'star-run': starRunGame,
+  'brick-blaster': brickBlasterGame,
+  // more-previews
 };
 
 const previews: Preview[] = [];

@@ -32,6 +32,8 @@ export class Hall {
   private room = renderRoom();
   private hum: LoopHandle = DEAD_LOOP;
   private blipT = 2;
+  /** Horizontale Kameraposition: bei vielen Automaten scrollt die Reihe mit der Auswahl. */
+  private cam = 0;
 
   constructor(
     private cabinets: CabinetInfo[],
@@ -87,6 +89,7 @@ export class Hall {
       this.say(notice);
     }
     this.env.g.canvas.style.cursor = hover >= 0 ? 'pointer' : 'default';
+    this.cam += (this.camTarget() - this.cam) * Math.min(1, dt * 8);
     this.updateAmbience(dt);
   }
 
@@ -111,7 +114,11 @@ export class Hall {
     const g = this.env.g;
     g.drawImage(this.room, 0, 0);
     this.drawSign(g);
-    this.cabinets.forEach((c, i) => this.drawCabinet(g, c, i));
+    this.cabinets.forEach((c, i) => {
+      const x = this.cabX(i);
+      if (x > -CAB_W - 8 && x < W + 8) this.drawCabinet(g, c, i);
+    });
+    this.drawScrollHints(g);
 
     g.fillStyle = 'rgba(0,0,0,0.6)';
     g.fillRect(0, 244, W, 15);
@@ -145,9 +152,39 @@ export class Hall {
     this.toast = { text, t: 2 };
   }
 
-  private cabX(i: number) {
+  private get rowWidth() {
     const n = this.cabinets.length;
-    return Math.round((W - (n * CAB_W + (n - 1) * GAP)) / 2) + i * (CAB_W + GAP);
+    return n * CAB_W + (n - 1) * GAP;
+  }
+
+  /** Passen alle Automaten ins Bild, steht die Reihe still und zentriert. */
+  private get scrolls() {
+    return this.rowWidth > W - 16;
+  }
+
+  private camTarget() {
+    if (!this.scrolls) return 0;
+    const center = this.sel * (CAB_W + GAP) + CAB_W / 2;
+    return Math.max(-16, Math.min(this.rowWidth - W + 16, center - W / 2));
+  }
+
+  private cabX(i: number) {
+    const base = this.scrolls ? 0 : Math.round((W - this.rowWidth) / 2);
+    return Math.round(base + i * (CAB_W + GAP) - this.cam);
+  }
+
+  /** Pfeile am Rand, wenn links oder rechts noch weitere Automaten stehen, plus Zähler. */
+  private drawScrollHints(g: CanvasRenderingContext2D) {
+    if (!this.scrolls) return;
+    const blink = this.t % 1 < 0.7;
+    const hint = (text: string, x: number) => {
+      g.fillStyle = 'rgba(0,0,0,0.6)';
+      g.fillRect(x - 2, 124, 16, 22);
+      if (blink) drawText(g, text, x + 6, 128, { scale: 2, color: C.WHITE, align: 'center' });
+    };
+    if (this.cabX(0) < 0) hint('<', 2);
+    if (this.cabX(this.cabinets.length - 1) + CAB_W > W) hint('>', W - 16);
+    drawText(g, `${this.sel + 1}/${this.cabinets.length}`, W - 6, 4, { color: '#6a5a9a', align: 'right' });
   }
 
   private hitTest(x: number, y: number): number {

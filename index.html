@@ -18,7 +18,7 @@
     <meta property="og:title" content="Arcade Arena | Free Retro Arcade Games in Your Browser" />
     <meta
       property="og:description"
-      content="A neon arcade hall in your browser. Three original retro games, same simple controls, high score tables. Free, no download."
+      content="A neon arcade hall in your browser. Original retro arcade games, same simple controls, high score tables. Free, no download."
     />
     <meta property="og:url" content="https://arcadearena.sfalter.de/" />
     <meta property="og:image" content="https://arcadearena.sfalter.de/og-image.png" />
@@ -92,6 +92,29 @@
             "isAccessibleForFree": true,
             "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
             "isPartOf": { "@id": "https://arcadearena.sfalter.de/#arcade" }
+          },
+          {
+            "@type": "VideoGame",
+            "name": "Brick Blaster",
+            "url": "https://arcadearena.sfalter.de/play/",
+            "description": "A brick breaker in the style of Breakout. Bounce the ball with your paddle, smash every brick and catch power-up capsules across hand-built levels.",
+            "genre": [
+              "Brick breaker",
+              "Arcade"
+            ],
+            "gamePlatform": "Web browser",
+            "playMode": "SinglePlayer",
+            "applicationCategory": "GameApplication",
+            "operatingSystem": "Web browser",
+            "isAccessibleForFree": true,
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "EUR"
+            },
+            "isPartOf": {
+              "@id": "https://arcadearena.sfalter.de/#arcade"
+            }
           },
           {
             "@type": "FAQPage",
@@ -182,7 +205,7 @@
       </section>
 
       <section id="games" class="games" aria-labelledby="games-title">
-        <h2 id="games-title">Three cabinets, ready to play</h2>
+        <h2 id="games-title">Every cabinet, ready to play</h2>
         <p class="section-lead">
           Arcade Arena is a free virtual arcade hall. Each cabinet holds an original game inspired by a golden-age classic,
           with the same simple controls and a high score table of its own.
@@ -248,6 +271,25 @@
               <p class="keys"><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> steer <kbd>Space</kbd> fire <kbd>Shift</kbd> bomb</p>
             </div>
           </article>
+          <article class="game" aria-labelledby="g-brick-blaster">
+            <div class="screen">
+              <canvas
+                data-preview="brick-blaster"
+                width="384"
+                height="288"
+                role="img"
+                aria-label="Brick Blaster gameplay: a ball bounces between an orange paddle and rows of rainbow-colored bricks"
+              ></canvas>
+            </div>
+            <div class="game__text">
+              <h3 id="g-brick-blaster">Brick Blaster</h3>
+              <p>
+                Bounce the ball off your paddle and smash every brick on the wall. Hard bricks need two hits, steel never breaks, and falling capsules bring a wider paddle or extra balls. A brick breaker in the spirit of Breakout.
+              </p>
+              <p class="keys"><kbd>←</kbd><kbd>→</kbd> move <kbd>Space</kbd> launch</p>
+            </div>
+          </article>
+          <!-- more-games -->
         </div>
       </section>
 

@@ -29,12 +29,14 @@ function seoFiles(site: string): Plugin {
 - Cosmic Siege: fixed shooter in the style of Space Invaders. Arrow keys move, Space fires.
 - Maze Muncher: maze chase game in the style of Pac-Man. Arrow keys only.
 - Star Run: first-person cockpit rail shooter in pseudo-3D. Arrow keys steer, Space fires, Shift drops a bomb.
+- Brick Blaster: brick breaker in the style of Breakout with power-ups. Arrow keys move the paddle, Space launches the ball.
+<!-- more-games -->
 
 ## Links
 
 - [Homepage](${site}/): overview, controls and FAQ
 - [Play now](${site}/play/): the arcade hall
-`,
+`.replace('<!-- more-games -->\n', ''),
   };
   return {
     name: 'seo-files',
