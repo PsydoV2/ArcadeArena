@@ -44,6 +44,7 @@ const MUTE_KEY = 'arcadearena.muted';
 export class Sound {
   private ac: AudioContext | null = null;
   private master: GainNode | null = null;
+  private comp: DynamicsCompressorNode | null = null;
   private noiseBuf: AudioBuffer | null = null;
   private loops = new Set<LoopHandle>();
   muted = false;
@@ -73,6 +74,7 @@ export class Sound {
       for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
       this.ac = ac;
       this.master = master;
+      this.comp = comp;
       this.noiseBuf = buf;
     }
     if (this.ac.state === 'suspended') void this.ac.resume();
@@ -204,6 +206,12 @@ export class Sound {
   /** Beendet alle Endlos-Sounds (Szenenwechsel, Pause, Game Over). */
   stopLoops(): void {
     for (const h of [...this.loops]) h.stop();
+  }
+
+  /** Zugang für die Musik: eigener Kanal am Kompressor, an der Effekt-Lautstärke vorbei. */
+  get graph(): { ac: AudioContext; out: AudioNode; noise: AudioBuffer } | null {
+    if (!this.ac || !this.comp || !this.noiseBuf) return null;
+    return { ac: this.ac, out: this.comp, noise: this.noiseBuf };
   }
 
   private begin(delay = 0) {
