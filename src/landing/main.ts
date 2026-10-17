@@ -11,6 +11,9 @@ import { brickBlasterGame } from '../games/brick-blaster';
 import { neonSerpentGame } from '../games/neon-serpent';
 import { rockBusterGame } from '../games/rock-buster';
 import { paddleDuelGame } from '../games/paddle-duel';
+import { roadHopperGame } from '../games/road-hopper';
+import { cityDefenderGame } from '../games/city-defender';
+import { gemCascadeGame } from '../games/gem-cascade';
 // more-imports
 import { Hall } from '../hall/hall';
 
@@ -79,6 +82,9 @@ const GAMES: Record<string, GameDefinition> = {
   'neon-serpent': neonSerpentGame,
   'rock-buster': rockBusterGame,
   'paddle-duel': paddleDuelGame,
+  'road-hopper': roadHopperGame,
+  'city-defender': cityDefenderGame,
+  'gem-cascade': gemCascadeGame,
   // more-previews
 };
 

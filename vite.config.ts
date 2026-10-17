@@ -33,6 +33,9 @@ function seoFiles(site: string): Plugin {
 - Neon Serpent: snake game with five wall layouts and bonus stars. Arrow keys steer.
 - Rock Buster: vector space shooter in the style of Asteroids. Left and right turn, Up thrusts, Space fires, Shift warps.
 - Paddle Duel: table tennis in the style of Pong against four computer opponents of rising skill. Up and Down move the paddle.
+- Road Hopper: road and river crossing game in the style of Frogger with diving turtles and a timer. Arrow keys hop.
+- City Defender: missile defense game in the style of Missile Command. Arrow keys aim the crosshair, Space fires.
+- Gem Cascade: falling gem puzzle in the style of Columns, each gem color has its own shape. Left and Right move, Down speeds up, Space swaps the order, Shift drops.
 <!-- more-games -->
 
 ## Links
