@@ -36,6 +36,7 @@ function seoFiles(site: string): Plugin {
 - Road Hopper: road and river crossing game in the style of Frogger with diving turtles and a timer. Arrow keys hop.
 - City Defender: missile defense game in the style of Missile Command. Arrow keys aim the crosshair, Space fires.
 - Gem Cascade: falling gem puzzle in the style of Columns, each gem color has its own shape. Left and Right move, Down speeds up, Space swaps the order, Shift drops.
+- Moon Lander: lunar landing game in the style of Lunar Lander with landing pads worth x2, x3 and x5. Left and Right turn, Space or Up fires the engine.
 <!-- more-games -->
 
 ## Links
