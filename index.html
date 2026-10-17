@@ -3,10 +3,382 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Arcade Arena</title>
+    <title>Arcade Arena | Free Retro Arcade Games in Your Browser</title>
+    <meta
+      name="description"
+      content="Play free retro arcade games in your browser. Walk into a neon arcade hall, pick a cabinet, press Enter. No download, no sign-up, high score tables included."
+    />
+    <link rel="canonical" href="%VITE_SITE_URL%/" />
+    <meta name="theme-color" content="#0b0816" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Arcade Arena" />
+    <meta property="og:title" content="Arcade Arena | Free Retro Arcade Games in Your Browser" />
+    <meta
+      property="og:description"
+      content="A neon arcade hall in your browser. Three original retro games, same simple controls, high score tables. Free, no download."
+    />
+    <meta property="og:url" content="%VITE_SITE_URL%/" />
+    <meta property="og:image" content="%VITE_SITE_URL%/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Arcade Arena hall with three neon arcade cabinets" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "%VITE_SITE_URL%/#website",
+            "url": "%VITE_SITE_URL%/",
+            "name": "Arcade Arena",
+            "description": "A free virtual arcade hall with original retro arcade games that run in the web browser.",
+            "inLanguage": "en"
+          },
+          {
+            "@type": "WebApplication",
+            "@id": "%VITE_SITE_URL%/#arcade",
+            "name": "Arcade Arena",
+            "url": "%VITE_SITE_URL%/play/",
+            "applicationCategory": "GameApplication",
+            "operatingSystem": "Any desktop operating system with a modern web browser",
+            "browserRequirements": "Requires JavaScript and HTML5 canvas. Keyboard or gamepad.",
+            "isAccessibleForFree": true,
+            "inLanguage": "en",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+          },
+          {
+            "@type": "VideoGame",
+            "name": "Cosmic Siege",
+            "url": "%VITE_SITE_URL%/play/",
+            "description": "A fixed shooter in the style of Space Invaders. Move your cannon, hide behind the shields and stop waves of invaders before they land.",
+            "genre": ["Fixed shooter", "Arcade"],
+            "gamePlatform": "Web browser",
+            "playMode": "SinglePlayer",
+            "applicationCategory": "GameApplication",
+            "operatingSystem": "Web browser",
+            "isAccessibleForFree": true,
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+            "isPartOf": { "@id": "%VITE_SITE_URL%/#arcade" }
+          },
+          {
+            "@type": "VideoGame",
+            "name": "Maze Muncher",
+            "url": "%VITE_SITE_URL%/play/",
+            "description": "A maze chase game in the style of Pac-Man. Eat every dot, dodge four imps with different personalities and turn the tables with power pills.",
+            "genre": ["Maze", "Arcade"],
+            "gamePlatform": "Web browser",
+            "playMode": "SinglePlayer",
+            "applicationCategory": "GameApplication",
+            "operatingSystem": "Web browser",
+            "isAccessibleForFree": true,
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+            "isPartOf": { "@id": "%VITE_SITE_URL%/#arcade" }
+          },
+          {
+            "@type": "VideoGame",
+            "name": "Star Run",
+            "url": "%VITE_SITE_URL%/play/",
+            "description": "A first-person cockpit rail shooter with 3D wireframe graphics. Steer through asteroid fields, shoot enemy fighters and dodge laser fences.",
+            "genre": ["Rail shooter", "Arcade"],
+            "gamePlatform": "Web browser",
+            "playMode": "SinglePlayer",
+            "applicationCategory": "GameApplication",
+            "operatingSystem": "Web browser",
+            "isAccessibleForFree": true,
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+            "isPartOf": { "@id": "%VITE_SITE_URL%/#arcade" }
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Is Arcade Arena free?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes. All games are free to play in your browser. There are no ads, no in-game purchases and no account to create." }
+              },
+              {
+                "@type": "Question",
+                "name": "Do I need to download or install anything?",
+                "acceptedAnswer": { "@type": "Answer", "text": "No. Open the arcade hall in a modern browser such as Chrome, Firefox, Edge or Safari, pick a cabinet and press Enter. The game starts in seconds." }
+              },
+              {
+                "@type": "Question",
+                "name": "How do I control the games?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Every cabinet uses the same layout: arrow keys or W, A, S, D to move, Space as the first button and Shift as the second. Enter starts and pauses a game, Esc takes you back to the hall." }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I play with a gamepad?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes. Xbox, PlayStation and Switch Pro controllers work. Use the D-pad or left stick to move, A to fire, B as the second button, Start to pause and Select to go back." }
+              },
+              {
+                "@type": "Question",
+                "name": "Are my high scores saved?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes, on your own computer. Each cabinet keeps a top 10 table with three-letter initials, stored in your browser. Nothing is sent to a server." }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I play on a phone or tablet?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Not yet. Arcade Arena is made for a desktop or laptop computer with a keyboard or gamepad. Touch controls are planned." }
+              },
+              {
+                "@type": "Question",
+                "name": "Are these the original arcade games?",
+                "acceptedAnswer": { "@type": "Answer", "text": "No. Cosmic Siege, Maze Muncher and Star Run are original games inspired by golden-age classics such as Space Invaders and Pac-Man. The graphics, sounds and names are our own." }
+              },
+              {
+                "@type": "Question",
+                "name": "How long does a game take?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Most rounds last between 2 and 10 minutes. There is nothing to save or unlock, so you can stop any time and come back next week without starting to learn again." }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="nav">
+      <a class="nav__logo" href="/" aria-label="Arcade Arena home">ARCADE ARENA</a>
+      <nav aria-label="Main">
+        <ul class="nav__links">
+          <li><a href="#games">Games</a></li>
+          <li><a href="#how">How it works</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </nav>
+      <a class="btn btn--small" href="/play/">Enter the arcade</a>
+    </header>
+
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero__copy">
+          <p class="eyebrow">Free browser arcade</p>
+          <h1 id="hero-title">Classic arcade games. No manual required.</h1>
+          <p class="hero__lead">
+            Walk into a neon arcade in your browser, pick a cabinet and play within seconds. Free, no download, no sign-up.
+          </p>
+          <div class="hero__actions">
+            <a class="btn" href="/play/">Enter the arcade</a>
+            <a class="btn btn--ghost" href="#games">See the games</a>
+          </div>
+        </div>
+        <a class="screen screen--hero" href="/play/" aria-label="Enter the arcade hall">
+          <canvas
+            data-preview="hall"
+            width="384"
+            height="288"
+            role="img"
+            aria-label="The Arcade Arena hall: three neon arcade cabinets named Cosmic Siege, Maze Muncher and Star Run"
+          ></canvas>
+        </a>
+      </section>
+
+      <section id="games" class="games" aria-labelledby="games-title">
+        <h2 id="games-title">Three cabinets, ready to play</h2>
+        <p class="section-lead">
+          Arcade Arena is a free virtual arcade hall. Each cabinet holds an original game inspired by a golden-age classic,
+          with the same simple controls and a high score table of its own.
+        </p>
+
+        <div class="games__grid">
+          <article class="game game--wide" aria-labelledby="g-cosmic">
+            <div class="screen">
+              <canvas
+                data-preview="cosmic-siege"
+                width="384"
+                height="288"
+                role="img"
+                aria-label="Cosmic Siege gameplay: rows of aliens march down toward the player's cannon and orange shields"
+              ></canvas>
+            </div>
+            <div class="game__text">
+              <h3 id="g-cosmic">Cosmic Siege</h3>
+              <p>
+                Waves of invaders march down the screen, faster with every row you clear. Hide behind the shields, watch for
+                the mystery UFO and stop them before they land. If you liked Space Invaders, you will feel at home.
+              </p>
+              <p class="keys"><kbd>←</kbd><kbd>→</kbd> move <kbd>Space</kbd> fire</p>
+            </div>
+          </article>
+
+          <article class="game" aria-labelledby="g-maze">
+            <div class="screen">
+              <canvas
+                data-preview="maze-muncher"
+                width="384"
+                height="288"
+                role="img"
+                aria-label="Maze Muncher gameplay: a yellow muncher eats dots in a blue neon maze while four imps chase it"
+              ></canvas>
+            </div>
+            <div class="game__text">
+              <h3 id="g-maze">Maze Muncher</h3>
+              <p>
+                Eat every dot in the maze. Four imps hunt you, each in its own way. Grab a power pill and the hunters become
+                the hunted. A maze chase in the spirit of Pac-Man.
+              </p>
+              <p class="keys"><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> move</p>
+            </div>
+          </article>
+
+          <article class="game" aria-labelledby="g-star">
+            <div class="screen">
+              <canvas
+                data-preview="star-run"
+                width="384"
+                height="288"
+                role="img"
+                aria-label="Star Run gameplay: view from a spaceship cockpit with a crosshair, wireframe asteroids and enemy fighters"
+              ></canvas>
+            </div>
+            <div class="game__text">
+              <h3 id="g-star">Star Run</h3>
+              <p>
+                Sit in the cockpit and fly through space in 3D. Shoot fighters and asteroids, dodge laser fences and keep
+                your shield up from sector to sector.
+              </p>
+              <p class="keys"><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> steer <kbd>Space</kbd> fire <kbd>Shift</kbd> bomb</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="how" class="how" aria-labelledby="how-title">
+        <h2 id="how-title">From the hall to the high score in two keys</h2>
+        <ol class="how__list">
+          <li>
+            <span class="how__keys" aria-hidden="true"><kbd>←</kbd><kbd>→</kbd></span>
+            <div>
+              <h3>Pick a cabinet</h3>
+              <p>Walk along the row of machines with the arrow keys, or simply click the one you like.</p>
+            </div>
+          </li>
+          <li>
+            <span class="how__keys" aria-hidden="true"><kbd class="kbd--wide">Enter</kbd></span>
+            <div>
+              <h3>Insert a coin</h3>
+              <p>Press Enter and the game starts. The controls are printed on every cabinet, so you are never guessing.</p>
+            </div>
+          </li>
+          <li>
+            <span class="how__keys" aria-hidden="true"><kbd>A</kbd><kbd>C</kbd><kbd>E</kbd></span>
+            <div>
+              <h3>Sign the high score table</h3>
+              <p>Beat a score and enter your three initials, just like back in the day. Then try to beat yourself.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="made" aria-labelledby="made-title">
+        <div class="made__intro">
+          <h2 id="made-title">Made for people who grew up in arcades</h2>
+          <p>
+            Modern games often want hours of tutorials before the fun starts, and after a week away you have forgotten
+            everything. Arcade Arena works the other way round: walk up, play a round, walk away.
+          </p>
+        </div>
+        <dl class="made__facts">
+          <div>
+            <dt>Large, clear text</dt>
+            <dd>Big pixel lettering and strong contrast on every screen.</dd>
+          </div>
+          <div>
+            <dt>Two buttons, no menus</dt>
+            <dd>Arrow keys plus one or two buttons. The same in every game.</dd>
+          </div>
+          <div>
+            <dt>Short rounds</dt>
+            <dd>Two to ten minutes. Nothing to save, nothing to unlock.</dd>
+          </div>
+          <div>
+            <dt>Keyboard or gamepad</dt>
+            <dd>Plug in an Xbox, PlayStation or Switch Pro controller and play.</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section id="faq" class="faq" aria-labelledby="faq-title">
+        <h2 id="faq-title">Questions and answers</h2>
+        <div class="faq__list">
+          <details>
+            <summary>Is Arcade Arena free?</summary>
+            <p>Yes. All games are free to play in your browser. There are no ads, no in-game purchases and no account to create.</p>
+          </details>
+          <details>
+            <summary>Do I need to download or install anything?</summary>
+            <p>
+              No. Open the arcade hall in a modern browser such as Chrome, Firefox, Edge or Safari, pick a cabinet and press
+              Enter. The game starts in seconds.
+            </p>
+          </details>
+          <details>
+            <summary>How do I control the games?</summary>
+            <p>
+              Every cabinet uses the same layout: arrow keys or W, A, S, D to move, Space as the first button and Shift as
+              the second. Enter starts and pauses a game, Esc takes you back to the hall.
+            </p>
+          </details>
+          <details>
+            <summary>Can I play with a gamepad?</summary>
+            <p>
+              Yes. Xbox, PlayStation and Switch Pro controllers work. Use the D-pad or left stick to move, A to fire, B as the
+              second button, Start to pause and Select to go back.
+            </p>
+          </details>
+          <details>
+            <summary>Are my high scores saved?</summary>
+            <p>
+              Yes, on your own computer. Each cabinet keeps a top 10 table with three-letter initials, stored in your
+              browser. Nothing is sent to a server.
+            </p>
+          </details>
+          <details>
+            <summary>Can I play on a phone or tablet?</summary>
+            <p>
+              Not yet. Arcade Arena is made for a desktop or laptop computer with a keyboard or gamepad. Touch controls are
+              planned.
+            </p>
+          </details>
+          <details>
+            <summary>Are these the original arcade games?</summary>
+            <p>
+              No. Cosmic Siege, Maze Muncher and Star Run are original games inspired by golden-age classics such as Space
+              Invaders and Pac-Man. The graphics, sounds and names are our own.
+            </p>
+          </details>
+          <details>
+            <summary>How long does a game take?</summary>
+            <p>
+              Most rounds last between 2 and 10 minutes. There is nothing to save or unlock, so you can stop any time and
+              come back next week without starting to learn again.
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <section class="final" aria-labelledby="final-title">
+        <h2 id="final-title">The high score table is waiting.</h2>
+        <a class="btn" href="/play/">Enter the arcade</a>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p class="footer__brand">ARCADE ARENA</p>
+      <p>
+        An independent hobby project. Space Invaders and Pac-Man are trademarks of their respective owners. Arcade Arena is
+        not affiliated with them.
+      </p>
+    </footer>
+
+    <script type="module" src="/src/landing/main.ts"></script>
   </body>
 </html>

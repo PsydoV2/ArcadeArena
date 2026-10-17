@@ -7,9 +7,6 @@ export const sfx = {
   power(s: Sound) {
     s.tone({ freq: 200, to: 900, dur: 0.25, type: 'square', vol: 0.12 });
   },
-  scared(s: Sound, high: boolean) {
-    s.tone({ freq: high ? 330 : 280, dur: 0.12, type: 'square', vol: 0.05 });
-  },
   eatImp(s: Sound) {
     s.tone({ freq: 200, to: 1600, dur: 0.35, type: 'square', vol: 0.15 });
   },

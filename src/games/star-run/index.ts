@@ -18,6 +18,7 @@ function drawAt(g: CanvasRenderingContext2D, model: typeof FIGHTER, sx: number, 
 export const starRun: CabinetInfo = {
   id: 'star-run',
   title: 'STAR RUN',
+  tagline: 'FLY, SHOOT AND DODGE IN 3D SPACE!',
   color: C.CYAN,
   accent: C.ORANGE,
   controls: [
@@ -43,10 +44,10 @@ export const starRun: CabinetInfo = {
     g.fillRect(cx, cy - 5, 1, 3);
     g.fillRect(cx, cy + 3, 1, 3);
   },
-  create: () => new CabinetShell(definition),
+  create: () => new CabinetShell(starRunGame),
 };
 
-const definition: GameDefinition = {
+export const starRunGame: GameDefinition = {
   info: starRun,
   howTo: ['FLY THROUGH 3D SPACE.', 'SHOOT FIGHTERS AND ROCKS,', 'DODGE THE LASER FENCES.', 'KEEP YOUR SHIELD UP!'],
   createRound: (env) => new StarRunRound(env),

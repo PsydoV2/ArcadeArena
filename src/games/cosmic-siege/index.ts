@@ -8,6 +8,7 @@ import { ALIEN_COLORS, ALIEN_W, SPR } from './sprites';
 export const cosmicSiege: CabinetInfo = {
   id: 'cosmic-siege',
   title: 'COSMIC SIEGE',
+  tagline: 'STOP THE ALIEN INVASION!',
   color: C.MAGENTA,
   accent: C.GREEN,
   controls: [
@@ -32,10 +33,10 @@ export const cosmicSiege: CabinetInfo = {
       g.fillRect(px + 6, Math.round(y + h - 12 - (shotT / 0.6) * 22), 1, 3);
     }
   },
-  create: () => new CabinetShell(definition),
+  create: () => new CabinetShell(cosmicSiegeGame),
 };
 
-const definition: GameDefinition = {
+export const cosmicSiegeGame: GameDefinition = {
   info: cosmicSiege,
   howTo: ['STOP THE INVADERS', 'BEFORE THEY LAND!', 'HIDE BEHIND THE SHIELDS.', 'EXTRA LIFE AT 1500 POINTS.'],
   createRound: (env) => new CosmicSiegeRound(env),

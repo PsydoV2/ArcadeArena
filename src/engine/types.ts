@@ -38,6 +38,8 @@ export interface ArcadeGame {
 export interface CabinetInfo {
   id: string;
   title: string;
+  /** Ein Satz, der in der Halle unter dem ausgewählten Automaten steht. */
+  tagline: string;
   /** Neon-Hauptfarbe (Marquee, Zierleisten). */
   color: string;
   accent: string;

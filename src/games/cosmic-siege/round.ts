@@ -2,6 +2,7 @@ import type { Sprite } from '../../engine/draw';
 import { drawText } from '../../engine/font';
 import * as C from '../../engine/palette';
 import type { Round, RoundEnv } from '../../engine/shell';
+import { DEAD_LOOP, type LoopHandle } from '../../engine/sound';
 import { SCREEN_H as H, SCREEN_W as W } from '../../engine/types';
 import { sfx } from './sfx';
 import { Shield, SHIELD_W } from './shield';
@@ -100,7 +101,7 @@ export class CosmicSiegeRound implements Round {
 
   private ufo: { x: number; dir: number } | null = null;
   private ufoT = 0;
-  private ufoBeep = 0;
+  private ufoHum: LoopHandle = DEAD_LOOP;
 
   private shields: Shield[] = [];
   private effects: Effect[] = [];
@@ -116,11 +117,11 @@ export class CosmicSiegeRound implements Round {
   }
 
   private get input() {
-    return this.env.ctx.input;
+    return this.env.input;
   }
 
   private get sound() {
-    return this.env.ctx.audio;
+    return this.env.audio;
   }
 
   update(dt: number): void {
@@ -160,6 +161,14 @@ export class CosmicSiegeRound implements Round {
           this.setupWave();
         }
         break;
+    }
+
+    // Heulton, solange das UFO fliegt
+    const wantHum = !!this.ufo && this.phase === 'play';
+    if (wantHum && !this.ufoHum.alive) {
+      this.ufoHum = this.sound.loop({ type: 'sawtooth', freq: 690, vol: 0.035, lfo: { rate: 7, depth: 90 } });
+    } else if (!wantHum && this.ufoHum.alive) {
+      this.ufoHum.stop();
     }
   }
 
@@ -411,11 +420,6 @@ export class CosmicSiegeRound implements Round {
     }
     const u = this.ufo;
     u.x += u.dir * UFO_SPEED * dt;
-    this.ufoBeep -= dt;
-    if (this.ufoBeep <= 0) {
-      sfx.ufo(this.sound, Math.floor(this.clock * 8) % 2 === 0);
-      this.ufoBeep = 0.12;
-    }
     if (u.x < -UFO_W - 2 || u.x > W + 2) this.ufo = null;
   }
 

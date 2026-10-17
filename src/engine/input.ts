@@ -12,11 +12,38 @@ const BINDINGS: Record<Action, string[]> = {
   back: ['Escape'],
 };
 
+/**
+ * Gamepad-Belegung nach dem Standard-Layout (Xbox/PlayStation/Switch Pro):
+ * Steuerkreuz oder linker Stick, A/X = Aktion 1, B/Y = Aktion 2, Start, Select/Back = Esc.
+ */
+const PAD_BUTTONS: Partial<Record<number, Action>> = {
+  0: 'a',
+  1: 'b',
+  2: 'a',
+  3: 'b',
+  8: 'back',
+  9: 'start',
+  12: 'up',
+  13: 'down',
+  14: 'left',
+  15: 'right',
+};
+const STICK_DEADZONE = 0.5;
+
 const PREVENT_DEFAULT = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space', 'Tab']);
 
-export class Input {
+/** Was eine Spielrunde von der Steuerung braucht – Tastatur, Gamepad oder Autopilot im Demo-Modus. */
+export interface Controls {
+  held(a: Action): boolean;
+  pressed(a: Action): boolean;
+}
+
+export class Input implements Controls {
   private down = new Set<string>();
   private hit = new Set<string>();
+  private padDown = new Set<Action>();
+  private padHit = new Set<Action>();
+  private padNotice: string | null = null;
   /** Seit dem letzten Tick getippte Zeichen (Großbuchstaben). */
   typed: string[] = [];
   mouse = { x: 0, y: 0, moved: false, clicked: false };
@@ -35,6 +62,8 @@ export class Input {
     });
     window.addEventListener('keyup', (e) => this.down.delete(e.code));
     window.addEventListener('blur', () => this.down.clear());
+    window.addEventListener('gamepadconnected', () => (this.padNotice = 'GAMEPAD CONNECTED'));
+    window.addEventListener('gamepaddisconnected', () => (this.padNotice = 'GAMEPAD DISCONNECTED'));
 
     const toScreen = (e: MouseEvent) => {
       const r = canvas.getBoundingClientRect();
@@ -53,14 +82,45 @@ export class Input {
     });
   }
 
-  /** Taste gehalten. */
-  held(a: Action): boolean {
-    return BINDINGS[a].some((c) => this.down.has(c));
+  /** Gamepads abfragen – vor jedem Update-Tick aufrufen (die Gamepad-API kennt keine Events für Tasten). */
+  pollPads(): void {
+    const now = new Set<Action>();
+    for (const pad of navigator.getGamepads?.() ?? []) {
+      if (!pad?.connected) continue;
+      pad.buttons.forEach((b, i) => {
+        const action = PAD_BUTTONS[i];
+        if (action && b.pressed) now.add(action);
+      });
+      const [x = 0, y = 0] = pad.axes;
+      if (x < -STICK_DEADZONE) now.add('left');
+      if (x > STICK_DEADZONE) now.add('right');
+      if (y < -STICK_DEADZONE) now.add('up');
+      if (y > STICK_DEADZONE) now.add('down');
+    }
+    this.padHit.clear();
+    for (const a of now) if (!this.padDown.has(a)) this.padHit.add(a);
+    this.padDown = now;
+    if (this.padHit.size) this.onGesture?.();
   }
 
-  /** Taste in diesem Tick neu gedrückt. */
+  /** Taste gehalten (Tastatur oder Gamepad). */
+  held(a: Action): boolean {
+    return this.padDown.has(a) || BINDINGS[a].some((c) => this.down.has(c));
+  }
+
+  /** Taste in diesem Tick neu gedrückt (Tastatur oder Gamepad). */
   pressed(a: Action): boolean {
-    return BINDINGS[a].some((c) => this.hit.has(c));
+    return this.padHit.has(a) || BINDINGS[a].some((c) => this.hit.has(c));
+  }
+
+  /** Ist mindestens ein Gamepad angeschlossen? (für passende Hinweistexte) */
+  get padActive(): boolean {
+    return (navigator.getGamepads?.() ?? []).some((p) => p?.connected);
+  }
+
+  /** Nur Gamepad: in diesem Tick neu gedrückt. */
+  padPressed(a: Action): boolean {
+    return this.padHit.has(a);
   }
 
   /** Bestimmte physische Taste in diesem Tick gedrückt (KeyboardEvent.code). */
@@ -68,9 +128,17 @@ export class Input {
     return this.hit.has(code);
   }
 
+  /** Meldung über an- oder abgesteckte Gamepads (einmalig abholen). */
+  takePadNotice(): string | null {
+    const n = this.padNotice;
+    this.padNotice = null;
+    return n;
+  }
+
   /** Nach jedem Update-Tick aufrufen. */
   endTick(): void {
     this.hit.clear();
+    this.padHit.clear();
     this.typed.length = 0;
     this.mouse.moved = false;
     this.mouse.clicked = false;

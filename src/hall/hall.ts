@@ -4,7 +4,8 @@ import { ScoreBoard, type ScoreEntry } from '../engine/highscores';
 import type { Input } from '../engine/input';
 import * as C from '../engine/palette';
 import { sfx } from '../engine/sfx';
-import type { Sound } from '../engine/sound';
+import { toggleFullscreen } from '../engine/screen';
+import { DEAD_LOOP, type LoopHandle, type Sound } from '../engine/sound';
 import { SCREEN_H as H, SCREEN_W as W, type CabinetInfo } from '../engine/types';
 
 const CAB_W = 104;
@@ -29,6 +30,8 @@ export class Hall {
   private toast: { text: string; t: number } | null = null;
   private best: (ScoreEntry | undefined)[] = [];
   private room = renderRoom();
+  private hum: LoopHandle = DEAD_LOOP;
+  private blipT = 2;
 
   constructor(
     private cabinets: CabinetInfo[],
@@ -77,6 +80,31 @@ export class Hall {
       if (!muted) sfx.blip(sound);
       this.say(muted ? 'SOUND OFF' : 'SOUND ON');
     }
+    if (input.keyPressed('KeyF')) toggleFullscreen();
+    const notice = input.takePadNotice();
+    if (notice) {
+      sfx.confirm(sound);
+      this.say(notice);
+    }
+    this.env.g.canvas.style.cursor = hover >= 0 ? 'pointer' : 'default';
+    this.updateAmbience(dt);
+  }
+
+  /** Leises Gemurmel der Halle und ab und zu ein Piepen von anderen Automaten. */
+  private updateAmbience(dt: number) {
+    const { sound } = this.env;
+    if (!this.hum.alive) this.hum = sound.loop({ noise: true, freq: 180, vol: 0.05 });
+    this.blipT -= dt;
+    if (this.blipT > 0) return;
+    this.blipT = 0.6 + Math.random() * 2.2;
+    const notes = [262, 294, 330, 392, 440, 523, 587, 659, 784];
+    const pick = <T>(xs: T[]) => xs[Math.floor(Math.random() * xs.length)];
+    const vol = 0.012 + Math.random() * 0.015;
+    const type = pick<OscillatorType>(['square', 'triangle']);
+    const count = 1 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < count; i++) {
+      sound.tone({ freq: pick(notes), dur: 0.06 + Math.random() * 0.1, type, vol, delay: i * 0.09 });
+    }
   }
 
   render(): void {
@@ -85,12 +113,21 @@ export class Hall {
     this.drawSign(g);
     this.cabinets.forEach((c, i) => this.drawCabinet(g, c, i));
 
+    g.fillStyle = 'rgba(0,0,0,0.6)';
+    g.fillRect(0, 244, W, 15);
     if (this.toast) {
-      g.fillStyle = 'rgba(0,0,0,0.75)';
-      g.fillRect(0, 244, W, 15);
       drawText(g, this.toast.text, W / 2, 248, { color: C.YELLOW, align: 'center' });
+    } else {
+      const c = this.cabinets[this.sel];
+      drawText(g, c.tagline, W / 2, 248, { color: c.color, align: 'center' });
     }
-    drawText(g, '←→ CHOOSE    ENTER = PLAY    M = SOUND', W / 2, 270, { color: '#9a8ac8', align: 'center' });
+    const help = this.env.input.padActive
+      ? '←→ CHOOSE   A / START = PLAY   SELECT = BACK'
+      : '←→ CHOOSE   ENTER = PLAY   M = SOUND   F = FULLSCREEN';
+    drawText(g, help, W / 2, 270, {
+      color: '#9a8ac8',
+      align: 'center',
+    });
   }
 
   private launch(i: number) {

@@ -8,6 +8,7 @@ import { drawMuncher, IMP_COLORS, IMP_NAMES, IMP_ROLES, IMP_SCARED, IMPS } from 
 export const mazeMuncher: CabinetInfo = {
   id: 'maze-muncher',
   title: 'MAZE MUNCHER',
+  tagline: 'EAT ALL DOTS - DODGE THE IMPS!',
   color: C.YELLOW,
   accent: C.BLUE,
   controls: [{ type: 'stick', keys: '←↑→↓', label: 'MOVE' }],
@@ -33,10 +34,10 @@ export const mazeMuncher: CabinetInfo = {
       g.drawImage(imp[Math.floor(t * 6) % 2], x + pos - 24, mid - 7);
     }
   },
-  create: () => new CabinetShell(definition),
+  create: () => new CabinetShell(mazeMuncherGame),
 };
 
-const definition: GameDefinition = {
+export const mazeMuncherGame: GameDefinition = {
   info: mazeMuncher,
   howTo: ['EAT ALL THE DOTS.', 'AVOID THE IMPS!', 'POWER PILLS TURN THEM BLUE -', 'THEN YOU CAN EAT THEM.'],
   createRound: (env) => new MazeMuncherRound(env),

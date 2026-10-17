@@ -2,6 +2,7 @@ import { fillCircle, line } from '../../engine/draw';
 import { drawText } from '../../engine/font';
 import * as C from '../../engine/palette';
 import type { Round, RoundEnv } from '../../engine/shell';
+import { DEAD_LOOP, type LoopHandle } from '../../engine/sound';
 import { SCREEN_H as H, SCREEN_W as W } from '../../engine/types';
 import { LEFT_BOX, RADAR, renderCockpit, RIGHT_BOX } from './cockpit';
 import { CX, CY, drawModel, FIGHTER, FOCAL, makeRock, type Model, project } from './models';
@@ -136,11 +137,13 @@ export class StarRunRound implements Round {
   private bonus = 0;
 
   private cockpit = renderCockpit();
+  private rumble: LoopHandle = DEAD_LOOP;
+  private engine: LoopHandle = DEAD_LOOP;
 
   constructor(private env: RoundEnv) {}
 
   private get sound() {
-    return this.env.ctx.audio;
+    return this.env.audio;
   }
 
   private get speed() {
@@ -195,6 +198,21 @@ export class StarRunRound implements Round {
         if (this.phaseT > 2.6) this.over = true;
         break;
     }
+    this.updateEngineSound();
+  }
+
+  /** Triebwerksbrummen, das beim Lenken anschwillt. */
+  private updateEngineSound() {
+    if (this.phase === 'dead') {
+      this.rumble.stop();
+      this.engine.stop();
+      return;
+    }
+    if (!this.rumble.alive) this.rumble = this.sound.loop({ noise: true, freq: 260, vol: 0.07 });
+    if (!this.engine.alive) this.engine = this.sound.loop({ type: 'sawtooth', freq: 55, vol: 0.025, lfo: { rate: 0.4, depth: 3 } });
+    const boost = Math.min(1, Math.hypot(this.vx, this.vy) / 160);
+    this.rumble.set(240 + this.sector * 20 + boost * 260, 0.07 + boost * 0.03);
+    this.engine.set(55 + boost * 14);
   }
 
   // ---------- Ablauf ----------
@@ -231,7 +249,7 @@ export class StarRunRound implements Round {
   // ---------- Schiff und Waffen ----------
 
   private updateShip(dt: number) {
-    const input = this.env.ctx.input;
+    const input = this.env.input;
     const ix = (input.held('right') ? 1 : 0) - (input.held('left') ? 1 : 0);
     const iy = (input.held('down') ? 1 : 0) - (input.held('up') ? 1 : 0);
     const k = Math.min(1, dt * 6);
@@ -242,7 +260,7 @@ export class StarRunRound implements Round {
   }
 
   private updateWeapons(dt: number) {
-    const input = this.env.ctx.input;
+    const input = this.env.input;
     this.fireT -= dt;
     if (input.held('a') && this.fireT <= 0) {
       this.fireT = FIRE_DELAY;

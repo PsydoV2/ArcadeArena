@@ -1,6 +1,7 @@
 import { drawText } from '../../engine/font';
 import * as C from '../../engine/palette';
 import type { Round, RoundEnv } from '../../engine/shell';
+import { DEAD_LOOP, type LoopHandle } from '../../engine/sound';
 import { SCREEN_H as H, SCREEN_W as W } from '../../engine/types';
 import { Maze, MAZE_COLS, MAZE_ROWS, renderWalls, T, TUNNEL_ROW } from './maze';
 import { sfx } from './sfx';
@@ -155,7 +156,8 @@ export class MazeMuncherRound implements Round {
   private modeT = 0;
   private frightT = 0;
   private chain = 0;
-  private scaredBeep = 0;
+  private siren: LoopHandle = DEAD_LOOP;
+  private sirenKind = '';
 
   private fruit: { t: number } | null = null;
   private popups: Popup[] = [];
@@ -167,7 +169,7 @@ export class MazeMuncherRound implements Round {
   }
 
   private get sound() {
-    return this.env.ctx.audio;
+    return this.env.audio;
   }
 
   private get mode(): 'scatter' | 'chase' {
@@ -216,6 +218,32 @@ export class MazeMuncherRound implements Round {
         }
         break;
     }
+    this.updateSiren();
+  }
+
+  /** Hintergrund-Sirene: steigt, je leerer das Labyrinth wird; eigener Klang bei blauen Imps. */
+  private updateSiren() {
+    let kind = '';
+    if (this.phase === 'play') {
+      if (this.frightT > 0) kind = 'scared';
+      else if (this.imps.some((m) => m.state === 'eyes' || m.state === 'entering')) kind = 'eyes';
+      else kind = 'normal';
+    }
+    if (kind !== this.sirenKind || (kind && !this.siren.alive)) {
+      this.siren.stop();
+      this.sirenKind = kind;
+      if (kind === 'scared') {
+        this.siren = this.sound.loop({ type: 'square', freq: 190, vol: 0.03, lfo: { rate: 8, depth: 50 } });
+      } else if (kind === 'eyes') {
+        this.siren = this.sound.loop({ type: 'square', freq: 900, vol: 0.025, lfo: { rate: 14, depth: 250 } });
+      } else if (kind === 'normal') {
+        this.siren = this.sound.loop({ type: 'triangle', freq: 440, vol: 0.06, lfo: { rate: 2.5, depth: 70 } });
+      }
+    }
+    if (kind === 'normal') {
+      const progress = this.dotsEaten / (this.dotsEaten + this.maze.dotsLeft);
+      this.siren.set(440 + progress * 220);
+    }
   }
 
   // ---------- Ablauf ----------
@@ -251,11 +279,6 @@ export class MazeMuncherRound implements Round {
 
     if (this.frightT > 0) {
       this.frightT -= dt;
-      this.scaredBeep -= dt;
-      if (this.scaredBeep <= 0) {
-        sfx.scared(this.sound, Math.floor(this.clock * 4) % 2 === 0);
-        this.scaredBeep = 0.25;
-      }
       if (this.frightT <= 0) for (const m of this.imps) m.scared = false;
     } else {
       this.modeT += dt;
@@ -286,7 +309,7 @@ export class MazeMuncherRound implements Round {
   // ---------- Spieler ----------
 
   private updatePlayer(dt: number) {
-    const input = this.env.ctx.input;
+    const input = this.env.input;
     if (input.pressed('up')) this.want = UP;
     if (input.pressed('down')) this.want = DOWN;
     if (input.pressed('left')) this.want = LEFT;
@@ -325,7 +348,6 @@ export class MazeMuncherRound implements Round {
   private frighten() {
     this.frightT = Math.max(1.5, 6 - (this.level - 1) * 0.8);
     this.chain = 0;
-    this.scaredBeep = 0;
     sfx.power(this.sound);
     for (const m of this.imps) {
       if (m.state === 'eyes' || m.state === 'entering') continue;

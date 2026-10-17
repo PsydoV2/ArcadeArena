@@ -4,17 +4,14 @@ const MARCH = [98, 87, 78, 73];
 
 export const sfx = {
   shoot(s: Sound) {
-    s.tone({ freq: 1200, to: 300, dur: 0.12, type: 'square', vol: 0.12 });
+    s.tone({ freq: 1200, to: 300, dur: 0.12, type: 'square', vol: 0.12, jitter: 0.06 });
   },
   alienHit(s: Sound) {
     s.noise({ dur: 0.18, freq: 4000, to: 300, vol: 0.35 });
-    s.tone({ freq: 400, to: 80, dur: 0.15, type: 'triangle', vol: 0.3 });
+    s.tone({ freq: 400, to: 80, dur: 0.15, type: 'triangle', vol: 0.3, jitter: 0.1 });
   },
   march(s: Sound, step: number) {
     s.tone({ freq: MARCH[step % MARCH.length], dur: 0.1, type: 'square', vol: 0.22 });
-  },
-  ufo(s: Sound, high: boolean) {
-    s.tone({ freq: high ? 760 : 620, dur: 0.1, type: 'sawtooth', vol: 0.06 });
   },
   ufoHit(s: Sound) {
     s.seq([[523, 0.06], [659, 0.06], [784, 0.06], [1047, 0.14]], { type: 'square', vol: 0.18 });

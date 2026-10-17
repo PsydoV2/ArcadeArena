@@ -2,7 +2,7 @@ import type { Sound } from '../../engine/sound';
 
 export const sfx = {
   laser(s: Sound) {
-    s.tone({ freq: 1500, to: 450, dur: 0.08, type: 'square', vol: 0.07 });
+    s.tone({ freq: 1500, to: 450, dur: 0.08, type: 'square', vol: 0.07, jitter: 0.08 });
   },
   explode(s: Sound, big = false) {
     s.noise({ dur: big ? 0.7 : 0.4, freq: 2500, to: 100, vol: big ? 0.5 : 0.35 });

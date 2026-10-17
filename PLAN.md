@@ -14,7 +14,7 @@ Wie früher in der Spielhalle: zum Automaten gehen, Münze rein, Joystick und zw
 |---|---|
 | Darstellung der Halle | 2D (Pixel-Art, Neon-Look) |
 | Sprache im Spiel | Englisch |
-| Zielgerät | Desktop mit Tastatur |
+| Zielgerät | Desktop mit Tastatur, optional Gamepad |
 | Highscores | Zuerst lokal (`localStorage`) |
 | Startspiele | Space-Invaders-artig, Pac-Man-artig, Cockpit-Weltraum-Shooter |
 
@@ -22,7 +22,7 @@ Wie früher in der Spielhalle: zum Automaten gehen, Münze rein, Joystick und zw
 Diese Regeln gelten für jedes Spiel und für die Halle:
 
 1. **Maximal 2 Klicks bis zum Spielstart.** Halle → Automat → „Insert Coin“ → los.
-2. **Einheitliche Steuerung.** Pfeiltasten/WASD + maximal 2 Aktionstasten (z. B. Leertaste, Shift). `Esc` führt immer zurück in die Halle.
+2. **Einheitliche Steuerung.** Pfeiltasten/WASD + maximal 2 Aktionstasten (z. B. Leertaste, Shift). `Esc` führt immer zurück in die Halle (mitten im Spiel nach kurzer Rückfrage, damit eine Runde nicht versehentlich verloren geht). Enter oder `P` pausiert.
 3. **Sofort verständlich.** Die Steuerung ist als Grafik am Automaten abgebildet (wie das Frontpanel echter Automaten). Jedes Spiel erklärt sich in 5 Sekunden.
 4. **Kurze Runden, kein Spielstand.** Eine Runde dauert 2–10 Minuten. Nach einer Woche Pause ist man trotzdem sofort wieder drin.
 5. **Highscore-Tafel pro Automat.** Eintrag mit 3 Buchstaben, wie früher. Das ist der wichtigste Motivator.

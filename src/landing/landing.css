@@ -1,0 +1,515 @@
+@import '@fontsource/atkinson-hyperlegible/latin-400.css';
+@import '@fontsource/atkinson-hyperlegible/latin-700.css';
+@import '@fontsource-variable/pixelify-sans/index.css';
+
+/*
+ * Bewusst nur dunkel: die Marke ist eine Neon-Spielhalle bei Nacht.
+ * Ein Akzent (Magenta), keine Rundungen (Pixel-Look), große gut lesbare Grundschrift.
+ */
+:root {
+  --bg: #0b0816;
+  --surface: #140e26;
+  --line: #2c2148;
+  --text: #f2eefc;
+  --muted: #c4bbdc;
+  --accent: #ff4fd8;
+  --accent-ink: #160b20;
+  --accent-deep: #7a1f6a;
+  --display: 'Pixelify Sans Variable', 'Atkinson Hyperlegible', system-ui, sans-serif;
+  --body: 'Atkinson Hyperlegible', system-ui, sans-serif;
+  --gutter: clamp(1rem, 4vw, 3rem);
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 1.25rem;
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--display);
+  font-weight: 600;
+  line-height: 1.1;
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(2.5rem, 5.2vw, 4.25rem);
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: clamp(2rem, 3.6vw, 3rem);
+}
+
+h3 {
+  font-size: 1.75rem;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--accent);
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.skip {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  padding: 0.5rem 1rem;
+  background: var(--accent);
+  color: var(--accent-ink);
+  z-index: 10;
+}
+
+.skip:focus {
+  top: 1rem;
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  display: inline-block;
+  padding: 0.85rem 1.6rem;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 5px 5px 0 var(--accent-deep);
+  transition:
+    transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 var(--accent-deep);
+}
+
+.btn:active {
+  transform: translate(4px, 4px);
+  box-shadow: 1px 1px 0 var(--accent-deep);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--text);
+  box-shadow: inset 0 0 0 2px var(--line);
+}
+
+.btn--ghost:hover,
+.btn--ghost:active {
+  transform: none;
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.btn--small {
+  padding: 0.55rem 1.1rem;
+  font-size: 1.1rem;
+  box-shadow: 4px 4px 0 var(--accent-deep);
+}
+
+/* ---------- Tasten ---------- */
+
+kbd {
+  display: inline-block;
+  min-width: 2.2em;
+  padding: 0.1em 0.45em;
+  margin: 0 0.15em;
+  background: var(--surface);
+  color: var(--text);
+  border: 2px solid #5a4a80;
+  border-bottom-width: 5px;
+  font-family: var(--display);
+  font-size: 0.95em;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* ---------- Navigation ---------- */
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  height: 72px;
+  padding: 0 var(--gutter);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.nav__logo {
+  font-family: var(--display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav nav {
+  margin-left: auto;
+}
+
+.nav__links {
+  display: flex;
+  gap: 1.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav__links a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.nav__links a:hover {
+  color: var(--text);
+}
+
+/* ---------- Bildschirme (Spielvorschauen) ---------- */
+
+.screen {
+  position: relative;
+  display: block;
+  background: #000;
+  border: 2px solid var(--line);
+  aspect-ratio: 4 / 3;
+}
+
+.screen canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+/* Scanlines wie im Spiel */
+.screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent 66%, rgb(0 0 0 / 0.25) 66%);
+  background-size: 100% 3px;
+}
+
+.screen--hero {
+  box-shadow: 0 0 60px rgb(255 79 216 / 0.18);
+  transition: box-shadow 0.3s ease;
+}
+
+.screen--hero:hover {
+  box-shadow: 0 0 80px rgb(255 79 216 / 0.32);
+}
+
+/* ---------- Abschnitte ---------- */
+
+main > section {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: clamp(4rem, 9vw, 7rem) var(--gutter);
+}
+
+.eyebrow {
+  font-family: var(--display);
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
+.section-lead {
+  max-width: 62ch;
+  margin-top: 1.25rem;
+  color: var(--muted);
+}
+
+/* Hero */
+main > .hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: center;
+  min-height: min(calc(100dvh - 72px), 680px);
+  padding-top: clamp(2rem, 5vw, 4rem);
+  padding-bottom: 3rem;
+}
+
+.hero__lead {
+  margin-top: 1.5rem;
+  max-width: 34ch;
+  font-size: 1.4rem;
+  color: var(--muted);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.25rem;
+  margin-top: 2.25rem;
+}
+
+/* Spiele: breite Hauptkachel, darunter zwei nebeneinander */
+.games__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  margin-top: 3rem;
+}
+
+.game {
+  display: grid;
+  gap: 1.5rem;
+  align-content: start;
+}
+
+.game--wide {
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  padding-bottom: 2.5rem;
+  border-bottom: 2px solid var(--line);
+}
+
+.game__text {
+  display: grid;
+  gap: 1rem;
+}
+
+.game__text p {
+  color: var(--muted);
+}
+
+.game__text .keys {
+  color: var(--text);
+  font-size: 1.1rem;
+}
+
+/* So funktioniert's */
+.how__list {
+  list-style: none;
+  margin: 3rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 2.5rem;
+  max-width: 900px;
+}
+
+.how__list li {
+  display: grid;
+  grid-template-columns: 14rem 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.how__keys {
+  font-size: 1.6rem;
+  white-space: nowrap;
+  padding-top: 0.2rem;
+}
+
+.kbd--wide {
+  min-width: 4.5em;
+}
+
+.how__list p {
+  margin-top: 0.5rem;
+  color: var(--muted);
+}
+
+/* Für Arcade-Kinder */
+main > .made {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  background: var(--surface);
+  max-width: none;
+  padding-left: max(var(--gutter), calc((100vw - 1400px) / 2 + var(--gutter)));
+  padding-right: max(var(--gutter), calc((100vw - 1400px) / 2 + var(--gutter)));
+}
+
+.made__intro p {
+  margin-top: 1.5rem;
+  color: var(--muted);
+  max-width: 48ch;
+}
+
+.made__facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.25rem 2.5rem;
+  margin: 0;
+}
+
+.made__facts div {
+  border-top: 2px solid var(--accent);
+  padding-top: 1rem;
+}
+
+.made__facts dt {
+  font-family: var(--display);
+  font-size: 1.45rem;
+  font-weight: 600;
+}
+
+.made__facts dd {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+}
+
+/* FAQ */
+.faq__list {
+  margin-top: 2.5rem;
+  max-width: 900px;
+  border-top: 2px solid var(--line);
+}
+
+.faq details {
+  border-bottom: 2px solid var(--line);
+}
+
+.faq summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 1.25rem 3rem 1.25rem 0;
+  position: relative;
+  font-weight: 700;
+  font-size: 1.35rem;
+}
+
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq summary::after {
+  content: '+';
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--display);
+  font-size: 1.8rem;
+  color: var(--accent);
+}
+
+.faq details[open] summary::after {
+  content: '-';
+}
+
+.faq details p {
+  padding: 0 0 1.5rem;
+  max-width: 65ch;
+  color: var(--muted);
+}
+
+/* Abschluss */
+main > .final {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  width: min(calc(100% - 2 * var(--gutter)), calc(1400px - 2 * var(--gutter)));
+  margin: 0 auto 4rem;
+  padding: clamp(2.5rem, 6vw, 4.5rem);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 50px rgb(255 79 216 / 0.15);
+}
+
+/* Fußzeile */
+.footer {
+  width: min(calc(100% - 2 * var(--gutter)), calc(1400px - 2 * var(--gutter)));
+  margin: 0 auto;
+  padding: 2.5rem 0 3rem;
+  border-top: 2px solid var(--line);
+  color: var(--muted);
+  font-size: 1rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.footer__brand {
+  font-family: var(--display);
+  color: var(--text);
+  font-size: 1.2rem;
+}
+
+/* ---------- Mobil ---------- */
+
+@media (max-width: 900px) {
+  .nav nav {
+    display: none;
+  }
+
+  .nav .btn--small {
+    margin-left: auto;
+  }
+
+  main > .hero,
+  .game--wide,
+  main > .made {
+    grid-template-columns: 1fr;
+  }
+
+  main > .hero {
+    min-height: auto;
+  }
+
+  .games__grid,
+  .made__facts {
+    grid-template-columns: 1fr;
+  }
+
+  .how__list li {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav__logo {
+    font-size: 1.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .btn,
+  .screen--hero {
+    transition: none;
+  }
+}
