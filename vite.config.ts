@@ -17,7 +17,7 @@ function seoFiles(site: string): Plugin {
 `,
     'llms.txt': `# Arcade Arena
 
-> Arcade Arena is a free virtual arcade hall that runs in the web browser. Visitors walk up to a cabinet, press Enter and play original retro arcade games inspired by golden-age classics. No download, no account, no ads.
+> Arcade Arena is a free virtual arcade hall that runs in the web browser. Visitors walk through the hall, step up to a cabinet, press Enter and play original retro arcade games inspired by golden-age classics. No download, no account, no ads.
 
 - Platform: any modern desktop web browser, keyboard or gamepad. Touch screens are not supported yet.
 - Price: free.

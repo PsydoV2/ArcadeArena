@@ -30,9 +30,10 @@ Diese Regeln gelten für jedes Spiel und für die Halle:
 7. **Attract-Mode.** Automaten zeigen im Leerlauf eine Demo oder ihre Highscores.
 
 ## Die Halle
-- 2D-Ansicht einer Spielhalle mit Automaten nebeneinander
-- Spieler wählt einen Automaten per Pfeiltasten + Enter oder per Mausklick
-- Jeder Automat zeigt: Name, Marquee-Grafik, Steuerungsbild, aktuellen Highscore
+- Begehbare 2D-Halle in Draufsicht: eine Spielfigur läuft mit den Pfeiltasten durch die Halle (Kamera folgt), je 6 Automaten pro Reihe
+- Vor einem Automaten öffnet sich ein Infofeld (Demo, Name, Steuerung, Highscore); Enter startet
+- Mausklick auf einen Automaten: die Figur läuft selbst hin und startet das Spiel
+- Durch die Ausgangstür geht es zurück zur Startseite
 - Atmosphäre: Neonlicht, dezente Hintergrundgeräusche, CRT-Effekt (Scanlines, leichte Bildkrümmung)
 
 ## Startspiele

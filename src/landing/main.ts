@@ -49,7 +49,7 @@ const idleInput = {
 
 function hallPreview(canvas: HTMLCanvasElement): Preview {
   const g = canvas.getContext('2d')!;
-  const hall = new Hall(CABINETS, { g, input: idleInput, sound: SILENT }, () => {});
+  const hall = new Hall(CABINETS, { g, input: idleInput, sound: SILENT }, () => {}, { demo: true });
   return { update: (dt) => hall.update(dt), render: () => hall.render(), visible: false };
 }
 

@@ -1,5 +1,5 @@
-import { fillCircle, strokeRect } from '../engine/draw';
-import { drawText } from '../engine/font';
+import { strokeRect } from '../engine/draw';
+import { drawText, textWidth } from '../engine/font';
 import { ScoreBoard, type ScoreEntry } from '../engine/highscores';
 import type { Input } from '../engine/input';
 import * as C from '../engine/palette';
@@ -8,14 +8,20 @@ import { toggleFullscreen } from '../engine/screen';
 import { DEAD_LOOP, type LoopHandle, type Sound } from '../engine/sound';
 import { SCREEN_H as H, SCREEN_W as W, type CabinetInfo } from '../engine/types';
 
-const CAB_W = 104;
-const CAB_TOP = 40;
-const CAB_BOTTOM = 236;
-const GAP = 20;
+/** Kachelgröße der Halle. */
+const T = 16;
+const MAP_W = 28;
+const PER_ROW = 6;
+const FIRST_COL = 5;
+const COL_STEP = 3;
+const ROW_STEP = 7;
+const CAB_W = 30;
+const CAB_H = 46;
+const WALK_SPEED = 74;
+const PANEL_Y = 216;
+const DOOR_COLS = [13, 14];
 
 const BODY = '#1b1233';
-const PANEL = '#2b1d4d';
-const DARK = '#0b0716';
 
 export interface HallEnv {
   g: CanvasRenderingContext2D;
@@ -23,58 +29,163 @@ export interface HallEnv {
   sound: Sound;
 }
 
-/** Die Spielhalle: Automaten nebeneinander, Auswahl per Pfeiltasten + Enter oder Mausklick. */
+export interface HallOptions {
+  /** Landingpage: die Figur läuft von selbst von Automat zu Automat. */
+  demo?: boolean;
+  /** Durch die Tür hinausgehen (z. B. zurück zur Startseite). */
+  onLeave?: () => void;
+}
+
+/** Ein aufgestellter Automat. */
+interface Spot {
+  info: CabinetInfo;
+  index: number;
+  /** Linke obere Kachel der Standfläche (2×2 Kacheln). */
+  tx: number;
+  ty: number;
+  /** Linke obere Ecke des Sprites in Pixeln. */
+  x: number;
+  y: number;
+  /** Kleiner Bildschirm mit der Demo (80×36). */
+  screen: HTMLCanvasElement;
+}
+
+/** Etwas, das nach Tiefe sortiert gezeichnet wird (Einrichtung, Automaten, Figur). */
+interface Drawable {
+  baseline: number;
+  draw: (g: CanvasRenderingContext2D) => void;
+}
+
+interface Point {
+  x: number;
+  y: number;
+}
+
+const DIRS = { down: { x: 0, y: 1 }, up: { x: 0, y: -1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } };
+
+/** Die begehbare Spielhalle (Draufsicht): zu einem Automaten laufen und Enter drücken. */
 export class Hall {
-  private sel = 0;
   private t = 0;
   private toast: { text: string; t: number } | null = null;
   private best: (ScoreEntry | undefined)[] = [];
-  private room = renderRoom();
   private hum: LoopHandle = DEAD_LOOP;
   private blipT = 2;
-  /** Horizontale Kameraposition: bei vielen Automaten scrollt die Reihe mit der Auswahl. */
-  private cam = 0;
+
+  private mapH: number;
+  private solid: boolean[][];
+  private spots: Spot[];
+  private props: Drawable[] = [];
+  private floor: HTMLCanvasElement;
+
+  /** Füße der Figur in Weltkoordinaten. */
+  private player: Point;
+  private face = DIRS.up;
+  private walking = false;
+  private stepT = 0;
+  private path: Point[] = [];
+  private pending: Spot | null = null;
+  private idleT = 0;
+  private cam: Point = { x: 0, y: 0 };
+  private near: Spot | null = null;
+  private atDoor = false;
+  private hover: Spot | null = null;
 
   constructor(
     private cabinets: CabinetInfo[],
     private env: HallEnv,
     private onLaunch: (c: CabinetInfo) => void,
+    private opts: HallOptions = {},
   ) {
+    const rows = Math.max(1, Math.ceil(cabinets.length / PER_ROW));
+    this.mapH = 2 + rows * ROW_STEP + 6;
+    this.solid = Array.from({ length: this.mapH }, () => Array(MAP_W).fill(false));
+    this.spots = cabinets.map((info, index) => {
+      const tx = FIRST_COL + (index % PER_ROW) * COL_STEP;
+      const ty = 2 + Math.floor(index / PER_ROW) * ROW_STEP;
+      const screen = document.createElement('canvas');
+      screen.width = 80;
+      screen.height = 36;
+      return { info, index, tx, ty, x: tx * T + 1, y: (ty + 2) * T - CAB_H, screen };
+    });
+    this.buildWalls();
+    this.buildProps();
+    this.floor = this.renderFloor();
+    this.player = { x: (DOOR_COLS[0] + 1) * T, y: (this.mapH - 3) * T + 8 };
+    this.cam = this.camTarget();
     this.resume();
   }
 
   /** Nach der Rückkehr aus einem Spiel: Highscores neu einlesen. */
   resume(): void {
     this.best = this.cabinets.map((c) => new ScoreBoard(c.id).list()[0]);
+    this.path = [];
+    this.pending = null;
   }
+
+  // ---------- Aufbau ----------
+
+  private block(tx: number, ty: number, w: number, h: number) {
+    for (let y = ty; y < ty + h; y++) for (let x = tx; x < tx + w; x++) if (this.solid[y]) this.solid[y][x] = true;
+  }
+
+  private buildWalls() {
+    this.block(0, 0, MAP_W, 2);
+    this.block(0, 0, 1, this.mapH);
+    this.block(MAP_W - 1, 0, 1, this.mapH);
+    this.block(0, this.mapH - 1, MAP_W, 1);
+    // Tür unten in der Mitte bleibt offen
+    for (const c of DOOR_COLS) this.solid[this.mapH - 1][c] = false;
+    for (const s of this.spots) this.block(s.tx, s.ty, 2, 2);
+  }
+
+  private buildProps() {
+    const bottom = this.mapH - 1;
+    // Wechselautomat und Snackautomat an der Rückwand
+    this.addProp(1, 2, 2, 2, (g, x, y) => this.drawChanger(g, x, y));
+    this.addProp(MAP_W - 3, 2, 2, 2, (g, x, y) => this.drawSnacks(g, x, y));
+    // Preistheke links unten, Sofa rechts unten, Pflanzen
+    this.addProp(2, bottom - 5, 6, 2, (g, x, y) => this.drawCounter(g, x, y));
+    this.addProp(MAP_W - 8, bottom - 2, 5, 1, (g, x, y) => this.drawSofa(g, x, y));
+    for (const tx of [1, MAP_W - 2, DOOR_COLS[0] - 3, DOOR_COLS[1] + 3]) {
+      this.addProp(tx, bottom - 1, 1, 1, (g, x, y) => this.drawPlant(g, x, y));
+    }
+  }
+
+  private addProp(tx: number, ty: number, w: number, h: number, draw: (g: CanvasRenderingContext2D, x: number, y: number) => void) {
+    this.block(tx, ty, w, h);
+    const x = tx * T;
+    const y = ty * T;
+    this.props.push({ baseline: (ty + h) * T, draw: (g) => draw(g, x, y) });
+  }
+
+  private get mapPxW() {
+    return MAP_W * T;
+  }
+
+  private get mapPxH() {
+    return this.mapH * T;
+  }
+
+  // ---------- Aktualisieren ----------
 
   update(dt: number): void {
     const { input, sound } = this.env;
     this.t += dt;
     if (this.toast && (this.toast.t -= dt) <= 0) this.toast = null;
 
-    const n = this.cabinets.length;
-    if (input.pressed('left') && this.sel > 0) {
-      this.sel--;
-      sfx.blip(sound);
-    }
-    if (input.pressed('right') && this.sel < n - 1) {
-      this.sel++;
-      sfx.blip(sound);
+    this.handleMouse();
+    this.move(dt);
+    this.findNear();
+
+    // Zum angeklickten Automaten gelaufen? Dann gleich starten.
+    if (this.pending && !this.path.length) {
+      if (this.near === this.pending) this.launch(this.pending);
+      this.pending = null;
     }
 
-    const hover = this.hitTest(input.mouse.x, input.mouse.y);
-    if (input.mouse.moved && hover >= 0 && hover !== this.sel) {
-      this.sel = hover;
-      sfx.blip(sound);
-    }
-    if (input.mouse.clicked) {
-      if (hover >= 0) {
-        this.sel = hover;
-        this.launch(hover);
-      }
-    } else if (input.pressed('start') || input.pressed('a')) {
-      this.launch(this.sel);
+    if (!this.opts.demo && (input.pressed('start') || input.pressed('a'))) {
+      if (this.near) this.launch(this.near);
+      else if (this.atDoor && this.opts.onLeave) this.opts.onLeave();
     }
 
     if (input.keyPressed('KeyM')) {
@@ -88,9 +199,165 @@ export class Hall {
       sfx.confirm(sound);
       this.say(notice);
     }
-    this.env.g.canvas.style.cursor = hover >= 0 ? 'pointer' : 'default';
-    this.cam += (this.camTarget() - this.cam) * Math.min(1, dt * 8);
+
+    const target = this.camTarget();
+    const k = Math.min(1, dt * 6);
+    this.cam.x += (target.x - this.cam.x) * k;
+    this.cam.y += (target.y - this.cam.y) * k;
     this.updateAmbience(dt);
+  }
+
+  private move(dt: number) {
+    const input = this.env.input;
+    let dx = (input.held('right') ? 1 : 0) - (input.held('left') ? 1 : 0);
+    let dy = (input.held('down') ? 1 : 0) - (input.held('up') ? 1 : 0);
+
+    if (dx || dy) {
+      // Tastatur hat Vorrang vor einem angeklickten Ziel
+      this.path = [];
+      this.pending = null;
+    } else if (this.path.length) {
+      const next = this.path[0];
+      const ex = next.x - this.player.x;
+      const ey = next.y - this.player.y;
+      if (Math.hypot(ex, ey) < 2) {
+        this.path.shift();
+      } else {
+        dx = Math.abs(ex) > 1 ? Math.sign(ex) : 0;
+        dy = Math.abs(ey) > 1 ? Math.sign(ey) : 0;
+      }
+    } else if (this.opts.demo) {
+      this.idleT += dt;
+      if (this.idleT > 2.5) {
+        this.idleT = 0;
+        const s = this.spots[Math.floor(Math.random() * this.spots.length)];
+        this.walkTo(this.frontOf(s));
+      }
+    }
+
+    this.walking = !!(dx || dy);
+    if (!this.walking) return;
+    if (dx) this.face = dx > 0 ? DIRS.right : DIRS.left;
+    else this.face = dy > 0 ? DIRS.down : DIRS.up;
+
+    const step = (WALK_SPEED * dt) / Math.hypot(dx, dy);
+    const nx = this.player.x + dx * step;
+    if (this.free(nx, this.player.y)) this.player.x = nx;
+    const ny = this.player.y + dy * step;
+    if (this.free(this.player.x, ny)) this.player.y = ny;
+
+    this.stepT -= dt;
+    if (this.stepT <= 0) {
+      this.stepT = 0.28;
+      this.env.sound.tone({ freq: 110, dur: 0.03, type: 'triangle', vol: 0.06, jitter: 0.1 });
+    }
+  }
+
+  /** Passt die Figur (Füße als kleine Box) an diese Stelle? */
+  private free(x: number, y: number): boolean {
+    for (const px of [x - 5, x + 5]) {
+      for (const py of [y - 4, y]) {
+        const tx = Math.floor(px / T);
+        const ty = Math.floor(py / T);
+        if (ty < 0 || ty >= this.mapH || tx < 0 || tx >= MAP_W || this.solid[ty][tx]) return false;
+      }
+    }
+    return true;
+  }
+
+  private frontOf(s: Spot): Point {
+    return { x: (s.tx + 1) * T, y: (s.ty + 2) * T + 10 };
+  }
+
+  private findNear() {
+    const p = this.player;
+    let best: Spot | null = null;
+    let bestD = Infinity;
+    for (const s of this.spots) {
+      const dx = Math.abs(p.x - this.frontOf(s).x);
+      if (dx <= 17 && p.y >= (s.ty + 2) * T && p.y <= (s.ty + 2) * T + 22 && dx < bestD) {
+        best = s;
+        bestD = dx;
+      }
+    }
+    if (best && best !== this.near && !this.opts.demo) sfx.blip(this.env.sound);
+    this.near = best;
+    this.atDoor = p.y >= (this.mapH - 2) * T && DOOR_COLS.includes(Math.floor(p.x / T));
+  }
+
+  // ---------- Maus und Wegfindung ----------
+
+  private handleMouse() {
+    if (this.opts.demo) return;
+    const { mouse } = this.env.input;
+    const wx = mouse.x + Math.round(this.cam.x);
+    const wy = mouse.y + Math.round(this.cam.y);
+    this.hover = this.spots.find((s) => wx >= s.x && wx < s.x + CAB_W && wy >= s.y && wy < s.y + CAB_H) ?? null;
+    this.env.g.canvas.style.cursor = this.hover ? 'pointer' : 'default';
+    if (!mouse.clicked) return;
+    if (this.hover) {
+      if (this.near === this.hover) {
+        this.launch(this.hover);
+      } else {
+        this.walkTo(this.frontOf(this.hover));
+        this.pending = this.hover;
+      }
+    } else if (mouse.y < (this.near ? PANEL_Y : H)) {
+      this.walkTo({ x: wx, y: wy });
+      this.pending = null;
+    }
+  }
+
+  /** Breitensuche über die Kacheln, danach als Wegpunkte (Kachelmitten) ablaufen. */
+  private walkTo(target: Point) {
+    const start = { x: Math.floor(this.player.x / T), y: Math.floor((this.player.y - 2) / T) };
+    const goal = { x: Math.floor(target.x / T), y: Math.floor((target.y - 2) / T) };
+    if (goal.y < 0 || goal.y >= this.mapH || goal.x < 0 || goal.x >= MAP_W || this.solid[goal.y][goal.x]) return;
+    const id = (x: number, y: number) => y * MAP_W + x;
+    const prev = new Map<number, number>([[id(start.x, start.y), -1]]);
+    const queue = [start];
+    while (queue.length) {
+      const c = queue.shift()!;
+      if (c.x === goal.x && c.y === goal.y) break;
+      for (const d of Object.values(DIRS)) {
+        const n = { x: c.x + d.x, y: c.y + d.y };
+        if (n.y < 0 || n.y >= this.mapH || n.x < 0 || n.x >= MAP_W || this.solid[n.y][n.x] || prev.has(id(n.x, n.y))) continue;
+        prev.set(id(n.x, n.y), id(c.x, c.y));
+        queue.push(n);
+      }
+    }
+    if (!prev.has(id(goal.x, goal.y))) return;
+    const path: Point[] = [];
+    for (let cur = id(goal.x, goal.y); cur !== id(start.x, start.y) && cur >= 0; cur = prev.get(cur)!) {
+      path.unshift({ x: (cur % MAP_W) * T + T / 2, y: Math.floor(cur / MAP_W) * T + 10 });
+    }
+    // Der letzte Wegpunkt ist das genaue Ziel
+    path.push({ x: target.x, y: target.y });
+    this.path = path;
+  }
+
+  private launch(s: Spot) {
+    if (this.opts.demo) return;
+    if (!s.info.create) {
+      sfx.buzz(this.env.sound);
+      this.say(`${s.info.title} - COMING SOON`);
+      return;
+    }
+    this.face = DIRS.up;
+    sfx.confirm(this.env.sound);
+    this.onLaunch(s.info);
+  }
+
+  private say(text: string) {
+    this.toast = { text, t: 2 };
+  }
+
+  private camTarget(): Point {
+    // Unten bleibt Platz für Infofeld bzw. Hinweisleiste
+    const viewH = this.near ? PANEL_Y : H - 16;
+    const x = Math.max(0, Math.min(this.mapPxW - W, this.player.x - W / 2));
+    const y = Math.max(0, Math.min(this.mapPxH - viewH, this.player.y - viewH / 2 - 10));
+    return { x, y };
   }
 
   /** Leises Gemurmel der Halle und ab und zu ein Piepen von anderen Automaten. */
@@ -101,7 +368,7 @@ export class Hall {
     if (this.blipT > 0) return;
     this.blipT = 0.6 + Math.random() * 2.2;
     const notes = [262, 294, 330, 392, 440, 523, 587, 659, 784];
-    const pick = <T>(xs: T[]) => xs[Math.floor(Math.random() * xs.length)];
+    const pick = <V>(xs: V[]) => xs[Math.floor(Math.random() * xs.length)];
     const vol = 0.012 + Math.random() * 0.015;
     const type = pick<OscillatorType>(['square', 'triangle']);
     const count = 1 + Math.floor(Math.random() * 3);
@@ -110,245 +377,364 @@ export class Hall {
     }
   }
 
+  // ---------- Zeichnen ----------
+
   render(): void {
     const g = this.env.g;
-    g.drawImage(this.room, 0, 0);
+    g.fillStyle = '#05030a';
+    g.fillRect(0, 0, W, H);
+
+    const cx = Math.round(this.cam.x);
+    const cy = Math.round(this.cam.y);
+    g.save();
+    g.translate(-cx, -cy);
+    g.drawImage(this.floor, 0, 0);
     this.drawSign(g);
-    this.cabinets.forEach((c, i) => {
-      const x = this.cabX(i);
-      if (x > -CAB_W - 8 && x < W + 8) this.drawCabinet(g, c, i);
-    });
-    this.drawScrollHints(g);
 
-    g.fillStyle = 'rgba(0,0,0,0.6)';
-    g.fillRect(0, 244, W, 15);
+    // Lichtkegel vor dem Automaten, an dem man steht
+    const lit = this.near ?? this.hover;
+    if (lit) {
+      g.fillStyle = C.alpha(lit.info.color, 0.16);
+      const f = this.frontOf(lit);
+      for (let k = 0; k < 6; k++) g.fillRect(f.x - 20 + k * 2, f.y - 10 + k * 3, 40 - k * 4, 3);
+    }
+
+    // Nach Tiefe sortiert: was weiter unten steht, verdeckt das Dahinterliegende
+    const drawables: Drawable[] = [
+      ...this.props,
+      ...this.spots
+        .filter((s) => s.x + CAB_W > cx - 4 && s.x < cx + W + 4 && s.y < cy + H && s.y + CAB_H > cy)
+        .map((s) => ({ baseline: (s.ty + 2) * T, draw: (gg: CanvasRenderingContext2D) => this.drawCabinet(gg, s) })),
+      { baseline: this.player.y, draw: (gg: CanvasRenderingContext2D) => this.drawPlayer(gg) },
+    ];
+    drawables.sort((a, b) => a.baseline - b.baseline).forEach((d) => d.draw(g));
+
+    // Namensschild über dem Automaten unter der Maus
+    if (this.hover && this.hover !== this.near) {
+      const s = this.hover;
+      const tw = textWidth(s.info.title);
+      g.fillStyle = 'rgba(0,0,0,0.75)';
+      g.fillRect(s.x + CAB_W / 2 - tw / 2 - 3, s.y - 12, tw + 6, 11);
+      drawText(g, s.info.title, s.x + CAB_W / 2, s.y - 10, { color: s.info.color, align: 'center' });
+    }
+    g.restore();
+
+    if (this.near) this.drawPanel(g, this.near);
+    else this.drawHint(g);
+
     if (this.toast) {
-      drawText(g, this.toast.text, W / 2, 248, { color: C.YELLOW, align: 'center' });
-    } else {
-      const c = this.cabinets[this.sel];
-      drawText(g, c.tagline, W / 2, 248, { color: c.color, align: 'center' });
+      g.fillStyle = 'rgba(0,0,0,0.8)';
+      g.fillRect(0, 4, W, 15);
+      drawText(g, this.toast.text, W / 2, 8, { color: C.YELLOW, align: 'center' });
     }
-    const help = this.env.input.padActive
-      ? '←→ CHOOSE   A / START = PLAY   SELECT = BACK'
-      : '←→ CHOOSE   ENTER = PLAY   M = SOUND   F = FULLSCREEN';
-    drawText(g, help, W / 2, 270, {
-      color: '#9a8ac8',
-      align: 'center',
-    });
-  }
-
-  private launch(i: number) {
-    const c = this.cabinets[i];
-    if (!c.create) {
-      sfx.buzz(this.env.sound);
-      this.say(`${c.title} - COMING SOON`);
-      return;
-    }
-    sfx.confirm(this.env.sound);
-    this.onLaunch(c);
-  }
-
-  private say(text: string) {
-    this.toast = { text, t: 2 };
-  }
-
-  private get rowWidth() {
-    const n = this.cabinets.length;
-    return n * CAB_W + (n - 1) * GAP;
-  }
-
-  /** Passen alle Automaten ins Bild, steht die Reihe still und zentriert. */
-  private get scrolls() {
-    return this.rowWidth > W - 16;
-  }
-
-  private camTarget() {
-    if (!this.scrolls) return 0;
-    const center = this.sel * (CAB_W + GAP) + CAB_W / 2;
-    return Math.max(-16, Math.min(this.rowWidth - W + 16, center - W / 2));
-  }
-
-  private cabX(i: number) {
-    const base = this.scrolls ? 0 : Math.round((W - this.rowWidth) / 2);
-    return Math.round(base + i * (CAB_W + GAP) - this.cam);
-  }
-
-  /** Pfeile am Rand, wenn links oder rechts noch weitere Automaten stehen, plus Zähler. */
-  private drawScrollHints(g: CanvasRenderingContext2D) {
-    if (!this.scrolls) return;
-    const blink = this.t % 1 < 0.7;
-    const hint = (text: string, x: number) => {
-      g.fillStyle = 'rgba(0,0,0,0.6)';
-      g.fillRect(x - 2, 124, 16, 22);
-      if (blink) drawText(g, text, x + 6, 128, { scale: 2, color: C.WHITE, align: 'center' });
-    };
-    if (this.cabX(0) < 0) hint('<', 2);
-    if (this.cabX(this.cabinets.length - 1) + CAB_W > W) hint('>', W - 16);
-    drawText(g, `${this.sel + 1}/${this.cabinets.length}`, W - 6, 4, { color: '#6a5a9a', align: 'right' });
-  }
-
-  private hitTest(x: number, y: number): number {
-    if (y < CAB_TOP - 3 || y > CAB_BOTTOM) return -1;
-    return this.cabinets.findIndex((_, i) => x >= this.cabX(i) && x < this.cabX(i) + CAB_W);
   }
 
   private drawSign(g: CanvasRenderingContext2D) {
     // Seltenes, kurzes Flackern – Atmosphäre, aber nicht hektisch
     const flicker = this.t % 9 > 8.7 && Math.floor(this.t * 20) % 2 === 0;
-    g.fillStyle = C.alpha(C.MAGENTA, 0.06);
-    g.fillRect(100, 6, W - 200, 26);
-    drawText(g, 'ARCADE ARENA', W / 2, 12, {
-      scale: 2,
-      color: flicker ? '#5a1a58' : C.MAGENTA,
-      align: 'center',
-      glow: !flicker,
-    });
+    const x = this.mapPxW / 2;
+    g.fillStyle = C.alpha(C.MAGENTA, 0.08);
+    g.fillRect(x - 84, 2, 168, 20);
+    drawText(g, 'ARCADE ARENA', x, 6, { scale: 2, color: flicker ? '#5a1a58' : C.MAGENTA, align: 'center', glow: !flicker });
   }
 
-  private drawCabinet(g: CanvasRenderingContext2D, c: CabinetInfo, i: number) {
-    const x = this.cabX(i);
-    const y = CAB_TOP;
-    const selected = i === this.sel;
-    const lit = !!c.create;
+  private drawCabinet(g: CanvasRenderingContext2D, s: Spot) {
+    const { x, y } = s;
+    const color = s.info.color;
+    const active = s === this.near || s === this.hover;
 
-    // Lichtkegel auf dem Boden
-    if (selected) {
-      g.fillStyle = C.alpha(c.color, 0.16);
-      for (let k = 0; k < 8; k++) g.fillRect(x - 8 + k * 2, CAB_BOTTOM + k * 2, CAB_W + 16 - k * 4, 2);
-    }
+    // Demo auf den kleinen Bildschirm rendern
+    const sg = s.screen.getContext('2d')!;
+    sg.fillStyle = C.BLACK;
+    sg.fillRect(0, 0, 80, 36);
+    s.info.attract?.(sg, 0, 0, 80, 36, this.t + s.index * 0.7);
 
-    // Gehäuse
+    g.fillStyle = 'rgba(0,0,0,0.45)';
+    g.fillRect(x + 1, y + CAB_H, CAB_W - 2, 3);
+
+    // Deckel und leuchtendes Marquee
     g.fillStyle = '#2a1d4a';
-    g.fillRect(x, y - 3, CAB_W, 3);
+    g.fillRect(x, y, CAB_W, 3);
+    g.fillStyle = C.alpha(color, 0.9);
+    g.fillRect(x + 1, y + 3, CAB_W - 2, 6);
+    g.fillStyle = 'rgba(255,255,255,0.4)';
+    g.fillRect(x + 2, y + 4, CAB_W - 4, 1);
     g.fillStyle = BODY;
-    g.fillRect(x, y + 20, CAB_W, CAB_BOTTOM - y - 20);
-    g.fillStyle = C.alpha(c.color, lit ? 0.8 : 0.35);
-    g.fillRect(x, y + 20, 2, CAB_BOTTOM - y - 20);
-    g.fillRect(x + CAB_W - 2, y + 20, 2, CAB_BOTTOM - y - 20);
+    g.fillRect(x, y + 9, CAB_W, CAB_H - 9);
+    g.fillStyle = C.alpha(color, 0.6);
+    g.fillRect(x, y + 9, 1, CAB_H - 9);
+    g.fillRect(x + CAB_W - 1, y + 9, 1, CAB_H - 9);
 
-    // Marquee
-    g.fillStyle = '#0f0820';
-    g.fillRect(x + 2, y, CAB_W - 4, 20);
-    g.fillStyle = C.alpha(c.color, lit ? 0.22 : 0.08);
-    g.fillRect(x + 3, y + 1, CAB_W - 6, 18);
-    strokeRect(g, x + 2, y, CAB_W - 4, 20, c.color);
-    drawText(g, c.title, x + CAB_W / 2, y + 7, { color: lit ? C.WHITE : '#b8acd8', align: 'center', glow: lit });
-
-    // Bildschirm
-    g.fillStyle = DARK;
-    g.fillRect(x + 8, y + 24, 88, 72);
-    strokeRect(g, x + 8, y + 24, 88, 72, '#2c2050');
-    const sx = x + 12;
-    const sy = y + 28;
-    g.fillStyle = C.BLACK;
-    g.fillRect(sx, sy, 80, 64);
-    g.save();
-    g.beginPath();
-    g.rect(sx, sy, 80, 64);
-    g.clip();
-    if (lit) this.drawAttract(g, c, i, sx, sy);
-    else this.drawOutOfOrder(g, sx, sy);
-    g.restore();
-    g.fillStyle = 'rgba(255,255,255,0.06)';
-    g.fillRect(sx + 3, sy + 2, 24, 1);
+    // Bildschirm mit laufender Demo
+    g.fillStyle = '#08050f';
+    g.fillRect(x + 3, y + 11, 24, 14);
+    g.drawImage(s.screen, 0, 0, 80, 36, x + 4, y + 13, 22, 10);
+    g.fillStyle = 'rgba(255,255,255,0.12)';
+    g.fillRect(x + 5, y + 12, 7, 1);
 
     // Bedienfeld mit Joystick und Knöpfen
-    const py = y + 98;
-    for (let k = 0; k < 30; k++) {
-      const inset = Math.round(6 - (k * 6) / 30);
-      g.fillStyle = k === 0 ? '#4a3680' : PANEL;
-      g.fillRect(x + inset, py + k, CAB_W - inset * 2, 1);
-    }
-    const buttons = c.controls.filter((h) => h.type === 'button');
-    const stickX = buttons.length ? x + 26 : x + CAB_W / 2;
-    fillCircle(g, stickX, py + 22, 6, '#120a22');
-    g.fillStyle = '#bdb6d6';
-    g.fillRect(stickX - 1, py + 10, 2, 12);
-    fillCircle(g, stickX, py + 10, 4, C.RED);
-    g.fillStyle = C.WHITE;
-    g.fillRect(stickX - 2, py + 8, 1, 1);
-    const buttonColors = [C.YELLOW, C.RED];
-    buttons.slice(0, 2).forEach((_, k) => {
-      const bx = x + 58 + k * 20;
-      fillCircle(g, bx, py + 18, 6, '#120a22');
-      fillCircle(g, bx, py + 17, 5, buttonColors[k]);
-      g.fillStyle = C.WHITE;
-      g.fillRect(bx - 2, py + 14, 1, 1);
-    });
-
-    // Schild mit der Tastenbelegung
-    g.fillStyle = '#0e0820';
-    g.fillRect(x + 6, y + 132, CAB_W - 12, 30);
-    strokeRect(g, x + 6, y + 132, CAB_W - 12, 30, C.alpha(c.color, 0.5));
-    c.controls.forEach((h, k) => {
-      drawText(g, `${h.keys} ${h.label}`, x + CAB_W / 2, y + 135 + k * 9, { color: C.WHITE, align: 'center' });
-    });
+    g.fillStyle = '#3a2a68';
+    g.fillRect(x + 1, y + 27, CAB_W - 2, 5);
+    g.fillStyle = C.RED;
+    g.fillRect(x + 7, y + 28, 2, 2);
+    g.fillStyle = C.YELLOW;
+    g.fillRect(x + 17, y + 29, 2, 2);
+    g.fillStyle = C.RED;
+    g.fillRect(x + 21, y + 29, 2, 2);
 
     // Münztür
-    g.fillStyle = DARK;
-    g.fillRect(x + 30, y + 168, 44, 26);
-    strokeRect(g, x + 30, y + 168, 44, 26, '#3a2a5a');
-    const slotOn = lit && (!selected || this.t % 1 < 0.6);
-    for (const ox of [38, 62]) {
-      g.fillStyle = slotOn ? C.RED : '#4a1a26';
-      g.fillRect(x + ox, y + 173, 4, 8);
-    }
-    drawText(g, 'COIN', x + CAB_W / 2, y + 184, { color: '#5a4a80', align: 'center' });
+    g.fillStyle = '#0b0716';
+    g.fillRect(x + 10, y + 35, 10, 8);
+    g.fillStyle = active && this.t % 1 < 0.5 ? C.WHITE : C.RED;
+    g.fillRect(x + 12, y + 37, 1, 3);
+    g.fillRect(x + 17, y + 37, 1, 3);
 
-    if (selected) {
-      const pulse = 0.55 + 0.45 * Math.sin(this.t * 4);
-      strokeRect(g, x - 2, y - 5, CAB_W + 4, CAB_BOTTOM - y + 5, C.alpha(c.color, pulse));
-      strokeRect(g, x - 3, y - 6, CAB_W + 6, CAB_BOTTOM - y + 7, C.alpha(c.color, pulse * 0.35));
+    if (active) {
+      const pulse = 0.55 + 0.45 * Math.sin(this.t * 5);
+      strokeRect(g, x - 2, y - 2, CAB_W + 4, CAB_H + 4, C.alpha(color, pulse));
+    }
+  }
+
+  /** Eigene Spielfigur: Kappe, T-Shirt, 4 Richtungen, 2 Laufphasen. */
+  private drawPlayer(g: CanvasRenderingContext2D) {
+    const x = Math.round(this.player.x) - 6;
+    const y = Math.round(this.player.y) - 16;
+    const f = this.walking ? Math.floor(this.t * 7) % 2 : 0;
+    const face = this.face;
+    const px = (cx: number, cy: number, w: number, h: number, c: string) => {
+      g.fillStyle = c;
+      g.fillRect(x + cx, y + cy, w, h);
+    };
+
+    px(1, 15, 10, 2, 'rgba(0,0,0,0.4)');
+    // Beine
+    const legA = f ? 2 : 3;
+    const legB = f ? 3 : 2;
+    px(3, 12, 2, legA, '#3a3a8a');
+    px(7, 12, 2, legB, '#3a3a8a');
+    px(3, 12 + legA, 2, 1, '#1a1a2a');
+    px(7, 12 + legB, 2, 1, '#1a1a2a');
+    // Körper und Arme
+    px(2, 7, 8, 5, C.ORANGE);
+    if (face === DIRS.left || face === DIRS.right) {
+      px(face.x > 0 ? 6 : 4, 8 + f, 2, 3, '#f0c8a0');
     } else {
-      g.fillStyle = 'rgba(5,3,12,0.45)';
-      g.fillRect(x, y - 3, CAB_W, CAB_BOTTOM - y + 3);
+      px(1, 8 + f, 1, 3, '#f0c8a0');
+      px(10, 8 + (1 - f), 1, 3, '#f0c8a0');
+    }
+    // Kopf
+    if (face === DIRS.up) {
+      px(3, 3, 6, 4, '#5a3a1a');
+    } else {
+      px(3, 3, 6, 4, '#f0c8a0');
+      if (face === DIRS.down) {
+        px(4, 4, 1, 1, C.BLACK);
+        px(7, 4, 1, 1, C.BLACK);
+      } else {
+        px(face.x > 0 ? 7 : 4, 4, 1, 1, C.BLACK);
+        px(face.x > 0 ? 3 : 7, 3, 2, 3, '#5a3a1a');
+      }
+    }
+    // Kappe mit Schirm
+    px(3, 0, 6, 3, C.CYAN);
+    if (face === DIRS.down) px(2, 3, 8, 1, '#2ab8c8');
+    else if (face === DIRS.left) px(1, 2, 3, 1, '#2ab8c8');
+    else if (face === DIRS.right) px(8, 2, 3, 1, '#2ab8c8');
+  }
+
+  /** Infofeld unten, wenn man vor einem Automaten steht. */
+  private drawPanel(g: CanvasRenderingContext2D, s: Spot) {
+    const info = s.info;
+    g.fillStyle = '#08050f';
+    g.fillRect(0, PANEL_Y, W, H - PANEL_Y);
+    g.fillStyle = C.alpha(info.color, 0.8);
+    g.fillRect(0, PANEL_Y, W, 1);
+
+    g.fillStyle = '#2c2050';
+    g.fillRect(6, PANEL_Y + 6, 86, 42);
+    g.drawImage(s.screen, 9, PANEL_Y + 9);
+    const best = this.best[s.index];
+    drawText(g, `HI ${best?.name ?? '---'} ${best?.score ?? 0}`, 49, PANEL_Y + 54, { color: info.accent, align: 'center' });
+
+    drawText(g, info.title, 102, PANEL_Y + 6, { scale: 2, color: info.color, glow: true });
+    drawText(g, info.tagline, 102, PANEL_Y + 24, { color: C.WHITE });
+    drawText(g, info.controls.map((c) => `${c.keys} ${c.label}`).join('   '), 102, PANEL_Y + 36, { color: '#b8acd8' });
+    if (this.t % 1 < 0.7) {
+      const label = this.env.input.padActive ? 'A = PLAY' : 'ENTER = PLAY';
+      drawText(g, label, W - 8, PANEL_Y + 52, { scale: 2, color: C.YELLOW, align: 'right', glow: true });
     }
   }
 
-  private drawAttract(g: CanvasRenderingContext2D, c: CabinetInfo, i: number, sx: number, sy: number) {
-    const best = this.best[i];
-    drawText(g, `HI ${best?.name ?? '---'} ${best?.score ?? 0}`, sx + 40, sy + 3, { color: c.accent, align: 'center' });
-    c.attract?.(g, sx, sy + 13, 80, 36, this.t);
-    if (this.t % 1 < 0.6) drawText(g, 'INSERT COIN', sx + 40, sy + 54, { color: C.WHITE, align: 'center' });
+  private drawHint(g: CanvasRenderingContext2D) {
+    g.fillStyle = 'rgba(0,0,0,0.7)';
+    g.fillRect(0, H - 16, W, 16);
+    let text = '←↑→↓ WALK UP TO A MACHINE   M = SOUND   F = FULLSCREEN';
+    let color = '#b8acd8';
+    if (this.atDoor && this.opts.onLeave) {
+      text = `${this.env.input.padActive ? 'A' : 'ENTER'} = LEAVE THE ARCADE`;
+      color = C.YELLOW;
+    } else if (this.opts.demo) {
+      text = 'WALK UP TO A MACHINE AND PRESS ENTER';
+    }
+    drawText(g, text, W / 2, H - 11, { color, align: 'center' });
   }
 
-  private drawOutOfOrder(g: CanvasRenderingContext2D, sx: number, sy: number) {
-    for (let k = 0; k < 90; k++) {
-      g.fillStyle = Math.random() < 0.5 ? '#2a2640' : '#16131f';
-      g.fillRect(sx + Math.floor(Math.random() * 80), sy + Math.floor(Math.random() * 64), 2, 1);
+  // ---------- Boden, Wände und Einrichtung ----------
+
+  private renderFloor(): HTMLCanvasElement {
+    const c = document.createElement('canvas');
+    c.width = this.mapPxW;
+    c.height = this.mapPxH;
+    const g = c.getContext('2d')!;
+
+    // Klassischer Spielhallen-Teppich mit Neon-Mustern
+    g.fillStyle = '#140a28';
+    g.fillRect(0, 0, c.width, c.height);
+    let seed = 7;
+    const rnd = () => {
+      seed = (seed * 16807) % 2147483647;
+      return seed / 2147483647;
+    };
+    const colors = [C.CYAN, C.MAGENTA, C.YELLOW, C.GREEN];
+    for (let i = 0; i < (c.width * c.height) / 170; i++) {
+      const x = Math.floor(rnd() * c.width);
+      const y = Math.floor(rnd() * c.height);
+      g.fillStyle = C.alpha(colors[Math.floor(rnd() * colors.length)], 0.16 + rnd() * 0.1);
+      const shape = Math.floor(rnd() * 4);
+      if (shape === 0) g.fillRect(x, y, 3, 1);
+      else if (shape === 1) g.fillRect(x, y, 1, 3);
+      else if (shape === 2) {
+        g.fillRect(x, y, 1, 1);
+        g.fillRect(x + 1, y + 1, 1, 1);
+        g.fillRect(x + 2, y, 1, 1);
+      } else {
+        g.fillRect(x, y, 2, 2);
+      }
     }
+
+    // Wände
+    const wall = (x: number, y: number, w: number, h: number) => {
+      g.fillStyle = '#1a1030';
+      g.fillRect(x, y, w, h);
+    };
+    wall(0, 0, c.width, 2 * T);
+    g.fillStyle = '#22163e';
+    for (let x = 0; x < c.width; x += 24) g.fillRect(x, 0, 1, 2 * T);
+    g.fillStyle = C.alpha(C.MAGENTA, 0.7);
+    g.fillRect(0, 2 * T - 2, c.width, 1);
+    g.fillStyle = C.alpha(C.CYAN, 0.5);
+    g.fillRect(0, 2 * T - 4, c.width, 1);
+    wall(0, 0, T, c.height);
+    wall(c.width - T, 0, T, c.height);
+    wall(0, c.height - T, c.width, T);
+    g.fillStyle = C.alpha(C.CYAN, 0.4);
+    g.fillRect(T - 1, 2 * T, 1, c.height - 3 * T);
+    g.fillRect(c.width - T, 2 * T, 1, c.height - 3 * T);
+
+    // Tür mit Fußmatte und Ausgangsschild
+    const dx = DOOR_COLS[0] * T;
+    const dy = c.height - T;
+    g.fillStyle = '#0a1830';
+    g.fillRect(dx, dy, 2 * T, T);
+    g.fillStyle = '#16284a';
+    g.fillRect(dx + 2, dy + 2, 2 * T - 4, T - 2);
+    g.fillStyle = '#3a2a1a';
+    g.fillRect(dx - 2, dy - 12, 2 * T + 4, 10);
+    g.fillStyle = '#5a3a2a';
+    for (let k = 0; k < 2 * T + 4; k += 3) g.fillRect(dx - 2 + k, dy - 11, 1, 8);
+    // Leuchtendes Ausgangsschild an der Wand neben der Tür
+    g.fillStyle = '#0a2a14';
+    g.fillRect(dx - 34, dy + 3, 28, 11);
+    drawText(g, 'EXIT', dx - 20, dy + 5, { color: C.GREEN, align: 'center', glow: true });
+    return c;
+  }
+
+  private drawChanger(g: CanvasRenderingContext2D, x: number, y: number) {
+    g.fillStyle = 'rgba(0,0,0,0.45)';
+    g.fillRect(x + 2, y + 32, 28, 3);
+    g.fillStyle = '#6a6488';
+    g.fillRect(x + 2, y - 10, 28, 42);
+    g.fillStyle = '#4a4466';
+    g.fillRect(x + 2, y - 10, 28, 3);
+    g.fillStyle = '#0b0716';
+    g.fillRect(x + 6, y - 2, 20, 9);
+    drawText(g, '25', x + 16, y, { color: C.YELLOW, align: 'center' });
     g.fillStyle = C.YELLOW;
-    g.fillRect(sx + 12, sy + 19, 56, 26);
-    strokeRect(g, sx + 13, sy + 20, 54, 24, '#7a5a00');
-    drawText(g, 'COMING', sx + 40, sy + 23, { color: C.BLACK, align: 'center' });
-    drawText(g, 'SOON', sx + 40, sy + 33, { color: C.BLACK, align: 'center' });
+    g.fillRect(x + 10, y + 12, 12, 3);
+    g.fillStyle = '#2a2640';
+    g.fillRect(x + 8, y + 20, 16, 8);
   }
-}
 
-/** Wand und Boden einmalig vorzeichnen. */
-function renderRoom(): HTMLCanvasElement {
-  const c = document.createElement('canvas');
-  c.width = W;
-  c.height = H;
-  const g = c.getContext('2d')!;
-
-  g.fillStyle = '#0a0616';
-  g.fillRect(0, 0, W, CAB_BOTTOM);
-  g.fillStyle = '#140c28';
-  for (let x = 0; x < W; x += 32) g.fillRect(x, 0, 1, CAB_BOTTOM);
-  g.fillStyle = '#2a1650';
-  g.fillRect(0, CAB_BOTTOM - 2, W, 2);
-
-  g.fillStyle = '#0d0718';
-  g.fillRect(0, CAB_BOTTOM, W, H - CAB_BOTTOM);
-  g.fillStyle = '#1e1040';
-  let gap = 3;
-  for (let y = CAB_BOTTOM + 3; y < H; y += gap, gap *= 1.35) g.fillRect(0, Math.round(y), W, 1);
-  // Fluchtlinien zum Punkt hinter der Wand
-  const vy = CAB_BOTTOM - 40;
-  for (let y = CAB_BOTTOM; y < H; y++) {
-    const f = (y - vy) / (H - vy);
-    for (let k = -10; k <= 10; k++) g.fillRect(Math.round(W / 2 + k * 44 * f), y, 1, 1);
+  private drawSnacks(g: CanvasRenderingContext2D, x: number, y: number) {
+    g.fillStyle = 'rgba(0,0,0,0.45)';
+    g.fillRect(x + 2, y + 32, 28, 3);
+    g.fillStyle = '#8a1a3a';
+    g.fillRect(x + 2, y - 12, 28, 44);
+    g.fillStyle = '#0a1a2a';
+    g.fillRect(x + 5, y - 8, 18, 30);
+    const items = [C.YELLOW, C.ORANGE, C.GREEN, C.CYAN, C.RED, C.WHITE];
+    for (let r = 0; r < 4; r++) {
+      for (let k = 0; k < 3; k++) {
+        g.fillStyle = items[(r * 3 + k) % items.length];
+        g.fillRect(x + 7 + k * 6, y - 6 + r * 7, 4, 4);
+      }
+    }
+    g.fillStyle = '#d8d0f0';
+    g.fillRect(x + 25, y - 4, 3, 10);
+    g.fillStyle = '#0b0716';
+    g.fillRect(x + 6, y + 24, 16, 5);
   }
-  return c;
+
+  private drawCounter(g: CanvasRenderingContext2D, x: number, y: number) {
+    const w = 6 * T;
+    g.fillStyle = 'rgba(0,0,0,0.45)';
+    g.fillRect(x, y + 2 * T, w, 3);
+    g.fillStyle = '#2a1a4a';
+    g.fillRect(x, y + 6, w, 2 * T - 6);
+    g.fillStyle = 'rgba(160,220,255,0.18)';
+    g.fillRect(x + 2, y - 4, w - 4, 12);
+    g.fillStyle = C.alpha(C.CYAN, 0.7);
+    g.fillRect(x + 2, y - 4, w - 4, 1);
+    // Preise in der Vitrine
+    const prizes = [C.MAGENTA, C.YELLOW, C.GREEN, C.ORANGE, C.CYAN, C.RED, C.WHITE, C.MAGENTA];
+    prizes.forEach((p, i) => {
+      g.fillStyle = p;
+      g.fillRect(x + 6 + i * 11, y + (i % 2 ? 0 : 2), 6, 5);
+    });
+    g.fillStyle = C.YELLOW;
+    g.fillRect(x, y + 6, w, 1);
+    drawText(g, 'PRIZES', x + w / 2, y + 16, { color: C.YELLOW, align: 'center' });
+  }
+
+  private drawSofa(g: CanvasRenderingContext2D, x: number, y: number) {
+    const w = 5 * T;
+    g.fillStyle = 'rgba(0,0,0,0.45)';
+    g.fillRect(x + 2, y + T, w - 4, 3);
+    g.fillStyle = '#7a1f6a';
+    g.fillRect(x, y - 8, w, 10);
+    g.fillStyle = '#a02a8a';
+    g.fillRect(x + 4, y + 2, w - 8, 10);
+    g.fillStyle = '#7a1f6a';
+    g.fillRect(x, y - 2, 5, 16);
+    g.fillRect(x + w - 5, y - 2, 5, 16);
+    g.fillStyle = '#c84aa8';
+    g.fillRect(x + 4 + (w - 8) / 2, y + 2, 1, 10);
+  }
+
+  private drawPlant(g: CanvasRenderingContext2D, x: number, y: number) {
+    g.fillStyle = 'rgba(0,0,0,0.45)';
+    g.fillRect(x + 2, y + T, 12, 2);
+    g.fillStyle = '#8a4a2a';
+    g.fillRect(x + 3, y + 6, 10, 10);
+    g.fillStyle = '#a85a32';
+    g.fillRect(x + 2, y + 5, 12, 2);
+    g.fillStyle = '#2a9a4a';
+    g.fillRect(x + 6, y - 10, 4, 16);
+    g.fillRect(x + 1, y - 6, 6, 4);
+    g.fillRect(x + 9, y - 8, 6, 4);
+    g.fillRect(x + 2, y - 1, 5, 3);
+    g.fillStyle = '#5ad86a';
+    g.fillRect(x + 7, y - 12, 2, 4);
+    g.fillRect(x + 11, y - 9, 3, 1);
+  }
 }

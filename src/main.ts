@@ -20,7 +20,8 @@ let game: ArcadeGame | null = null;
 /** Zeit seit dem letzten Szenenwechsel (für den CRT-Einschalteffekt). */
 let sceneT = POWER_ON_TIME;
 
-const hall = new Hall(CABINETS, { g, input, sound }, launch);
+// Durch die Tür der Halle geht es zurück zur Startseite
+const hall = new Hall(CABINETS, { g, input, sound }, launch, { onLeave: () => location.assign('/') });
 
 function launch(info: CabinetInfo) {
   sound.stopLoops();

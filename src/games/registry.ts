@@ -12,5 +12,21 @@ import { roadHopper } from './road-hopper';
 import { rockBuster } from './rock-buster';
 import { starRun } from './star-run';
 
-/** Reihenfolge der Automaten in der Halle. Neue Spiele hier eintragen. */
-export const CABINETS: CabinetInfo[] = [cosmicSiege, mazeMuncher, starRun, brickBlaster, neonSerpent, rockBuster, paddleDuel, roadHopper, cityDefender, gemCascade, moonLander, gardenGuard];
+/**
+ * Aufstellung in der Halle: je 6 Automaten pro Reihe.
+ * Obere Reihe an der Wand: Shooter. Mittlere Reihe: Labyrinth, Geschick und Puzzle.
+ */
+export const CABINETS: CabinetInfo[] = [
+  cosmicSiege,
+  starRun,
+  rockBuster,
+  cityDefender,
+  gardenGuard,
+  moonLander,
+  mazeMuncher,
+  neonSerpent,
+  roadHopper,
+  brickBlaster,
+  gemCascade,
+  paddleDuel,
+];
