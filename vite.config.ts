@@ -1,5 +1,8 @@
 import { resolve } from 'node:path';
-import { defineConfig, loadEnv, type Plugin } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
+
+/** Öffentliche Adresse der Seite (für sitemap.xml, robots.txt, llms.txt). */
+const SITE = 'https://arcadearena.sfalter.de';
 
 /** Erzeugt sitemap.xml, robots.txt und llms.txt mit der echten Seitenadresse. */
 function seoFiles(site: string): Plugin {
@@ -49,17 +52,14 @@ function seoFiles(site: string): Plugin {
   };
 }
 
-export default defineConfig(({ mode }) => {
-  const site = (loadEnv(mode, process.cwd(), 'VITE_').VITE_SITE_URL ?? '').replace(/\/$/, '');
-  return {
-    plugins: [seoFiles(site)],
-    build: {
-      rollupOptions: {
-        input: {
-          home: resolve(__dirname, 'index.html'),
-          play: resolve(__dirname, 'play/index.html'),
-        },
+export default defineConfig({
+  plugins: [seoFiles(SITE)],
+  build: {
+    rollupOptions: {
+      input: {
+        home: resolve(__dirname, 'index.html'),
+        play: resolve(__dirname, 'play/index.html'),
       },
     },
-  };
+  },
 });
