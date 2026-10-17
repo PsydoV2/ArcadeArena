@@ -2,7 +2,10 @@ import type { CabinetInfo } from '../engine/types';
 import { brickBlaster } from './brick-blaster';
 import { cosmicSiege } from './cosmic-siege';
 import { mazeMuncher } from './maze-muncher';
+import { neonSerpent } from './neon-serpent';
+import { paddleDuel } from './paddle-duel';
+import { rockBuster } from './rock-buster';
 import { starRun } from './star-run';
 
 /** Reihenfolge der Automaten in der Halle. Neue Spiele hier eintragen. */
-export const CABINETS: CabinetInfo[] = [cosmicSiege, mazeMuncher, starRun, brickBlaster];
+export const CABINETS: CabinetInfo[] = [cosmicSiege, mazeMuncher, starRun, brickBlaster, neonSerpent, rockBuster, paddleDuel];

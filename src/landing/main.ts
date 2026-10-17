@@ -8,6 +8,9 @@ import { mazeMuncherGame } from '../games/maze-muncher';
 import { CABINETS } from '../games/registry';
 import { starRunGame } from '../games/star-run';
 import { brickBlasterGame } from '../games/brick-blaster';
+import { neonSerpentGame } from '../games/neon-serpent';
+import { rockBusterGame } from '../games/rock-buster';
+import { paddleDuelGame } from '../games/paddle-duel';
 // more-imports
 import { Hall } from '../hall/hall';
 
@@ -73,6 +76,9 @@ const GAMES: Record<string, GameDefinition> = {
   'maze-muncher': mazeMuncherGame,
   'star-run': starRunGame,
   'brick-blaster': brickBlasterGame,
+  'neon-serpent': neonSerpentGame,
+  'rock-buster': rockBusterGame,
+  'paddle-duel': paddleDuelGame,
   // more-previews
 };
 

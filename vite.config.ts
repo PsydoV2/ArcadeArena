@@ -30,6 +30,9 @@ function seoFiles(site: string): Plugin {
 - Maze Muncher: maze chase game in the style of Pac-Man. Arrow keys only.
 - Star Run: first-person cockpit rail shooter in pseudo-3D. Arrow keys steer, Space fires, Shift drops a bomb.
 - Brick Blaster: brick breaker in the style of Breakout with power-ups. Arrow keys move the paddle, Space launches the ball.
+- Neon Serpent: snake game with five wall layouts and bonus stars. Arrow keys steer.
+- Rock Buster: vector space shooter in the style of Asteroids. Left and right turn, Up thrusts, Space fires, Shift warps.
+- Paddle Duel: table tennis in the style of Pong against four computer opponents of rising skill. Up and Down move the paddle.
 <!-- more-games -->
 
 ## Links
