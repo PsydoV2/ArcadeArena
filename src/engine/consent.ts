@@ -1,7 +1,8 @@
 /** Einwilligung in die Besucherstatistik (Umami). Ohne Zustimmung wird kein Skript geladen. */
 
 const KEY = 'arcade-arena:analytics-consent';
-const UMAMI_SRC = 'https://umami.sfalter.de/recorder.js';
+/** Besucherzählung (script.js) und Sitzungsaufzeichnung (recorder.js). */
+const UMAMI_SCRIPTS = ['https://umami.sfalter.de/script.js', 'https://umami.sfalter.de/recorder.js'];
 const UMAMI_ID = 'fd0a8fa5-e7be-4a75-ad12-d2fbfc30c350';
 
 export type Consent = 'granted' | 'denied';
@@ -24,14 +25,16 @@ export function setConsent(value: Consent) {
   if (value === 'granted') loadAnalytics();
 }
 
-/** Bindet das Umami-Skript ein, aber nur mit Zustimmung und nur einmal. */
+/** Bindet die Umami-Skripte ein, aber nur mit Zustimmung und jedes nur einmal. */
 export function loadAnalytics() {
-  if (document.querySelector(`script[src="${UMAMI_SRC}"]`)) return;
-  const script = document.createElement('script');
-  script.defer = true;
-  script.src = UMAMI_SRC;
-  script.dataset.websiteId = UMAMI_ID;
-  document.head.append(script);
+  for (const src of UMAMI_SCRIPTS) {
+    if (document.querySelector(`script[src="${src}"]`)) continue;
+    const script = document.createElement('script');
+    script.defer = true;
+    script.src = src;
+    script.dataset.websiteId = UMAMI_ID;
+    document.head.append(script);
+  }
 }
 
 /** Lädt die Statistik, falls der Besucher schon zugestimmt hat. */
