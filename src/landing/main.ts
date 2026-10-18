@@ -138,5 +138,5 @@ if (!reduceMotion) {
 registerServiceWorker();
 initConsentBanner(
   document.querySelector<HTMLElement>('[data-consent-banner]')!,
-  document.querySelector<HTMLElement>('[data-consent-open]'),
+  document.querySelectorAll<HTMLElement>('[data-consent-open]'),
 );

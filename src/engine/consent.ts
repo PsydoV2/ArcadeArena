@@ -40,7 +40,7 @@ export function loadAnalyticsIfGranted() {
 }
 
 /** Zeigt den Hinweis am unteren Rand, bis der Besucher sich entschieden hat. */
-export function initConsentBanner(banner: HTMLElement, reopen?: HTMLElement | null) {
+export function initConsentBanner(banner: HTMLElement, reopen: Iterable<HTMLElement> = []) {
   const show = () => {
     banner.hidden = false;
     banner.querySelector<HTMLButtonElement>('[data-consent="granted"]')?.focus({ preventScroll: true });
@@ -51,7 +51,7 @@ export function initConsentBanner(banner: HTMLElement, reopen?: HTMLElement | nu
     setConsent(button.dataset.consent as Consent);
     banner.hidden = true;
   });
-  reopen?.addEventListener('click', show);
+  for (const button of reopen) button.addEventListener('click', show);
 
   const consent = getConsent();
   if (consent === 'granted') loadAnalytics();

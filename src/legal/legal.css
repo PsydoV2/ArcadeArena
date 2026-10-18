@@ -1,0 +1,53 @@
+/* Rechtstexte: schmale Lesespalte, sonst dieselbe Optik wie die Startseite. */
+
+.nav__cta {
+  margin-left: auto;
+}
+
+.legal {
+  max-width: 72ch;
+  margin: 0 auto;
+  padding: clamp(3rem, 7vw, 5rem) var(--gutter) clamp(4rem, 9vw, 6rem);
+  font-size: 1.1rem;
+  overflow-wrap: break-word;
+}
+
+.legal h1 {
+  margin-bottom: 1.5rem;
+}
+
+.legal h2 {
+  font-size: clamp(1.4rem, 2.4vw, 1.75rem);
+  margin: 2.5rem 0 0.75rem;
+}
+
+.legal p + p,
+.legal ul + p,
+.legal p + ul {
+  margin-top: 0.85rem;
+}
+
+.legal ul {
+  margin: 0;
+  padding-left: 1.4rem;
+}
+
+.legal li + li {
+  margin-top: 0.25rem;
+}
+
+.legal__lead {
+  color: var(--muted);
+  font-size: 1.25rem;
+}
+
+.legal__date {
+  margin-top: 3rem;
+  color: var(--muted);
+}
+
+@media (max-width: 700px) {
+  .nav__cta {
+    display: none;
+  }
+}

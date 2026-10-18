@@ -69,6 +69,8 @@ export default defineConfig({
       input: {
         home: resolve(__dirname, 'index.html'),
         play: resolve(__dirname, 'play/index.html'),
+        impressum: resolve(__dirname, 'impressum/index.html'),
+        datenschutz: resolve(__dirname, 'datenschutz/index.html'),
       },
     },
   },
