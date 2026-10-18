@@ -3,6 +3,7 @@ import { Autopilot } from '../engine/autopilot';
 import type { Input } from '../engine/input';
 import type { GameDefinition, Round } from '../engine/shell';
 import { Sound } from '../engine/sound';
+import { registerServiceWorker } from '../engine/pwa';
 import { cosmicSiegeGame } from '../games/cosmic-siege';
 import { mazeMuncherGame } from '../games/maze-muncher';
 import { CABINETS } from '../games/registry';
@@ -132,3 +133,5 @@ if (!reduceMotion) {
   };
   requestAnimationFrame(frame);
 }
+
+registerServiceWorker();

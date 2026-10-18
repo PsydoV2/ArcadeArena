@@ -7,6 +7,7 @@ import { Sound } from './engine/sound';
 import { SCREEN_H, SCREEN_W, type ArcadeGame, type CabinetInfo } from './engine/types';
 import { CABINETS } from './games/registry';
 import { Hall } from './hall/hall';
+import { registerServiceWorker } from './engine/pwa';
 
 const POWER_ON_TIME = 0.35;
 
@@ -62,3 +63,5 @@ startLoop(
     screen.present();
   },
 );
+
+registerServiceWorker();
