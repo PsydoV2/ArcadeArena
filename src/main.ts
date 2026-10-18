@@ -10,6 +10,7 @@ import { CABINETS } from './games/registry';
 import { Hall } from './hall/hall';
 import { RECORDS } from './hall/records';
 import { registerServiceWorker } from './engine/pwa';
+import { loadAnalyticsIfGranted } from './engine/consent';
 
 const POWER_ON_TIME = 0.35;
 
@@ -72,3 +73,4 @@ startLoop(
 );
 
 registerServiceWorker();
+loadAnalyticsIfGranted();

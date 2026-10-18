@@ -4,6 +4,7 @@ import type { Input } from '../engine/input';
 import type { GameDefinition, Round } from '../engine/shell';
 import { Sound } from '../engine/sound';
 import { registerServiceWorker } from '../engine/pwa';
+import { initConsentBanner } from '../engine/consent';
 import { cosmicSiegeGame } from '../games/cosmic-siege';
 import { mazeMuncherGame } from '../games/maze-muncher';
 import { CABINETS } from '../games/registry';
@@ -135,3 +136,7 @@ if (!reduceMotion) {
 }
 
 registerServiceWorker();
+initConsentBanner(
+  document.querySelector<HTMLElement>('[data-consent-banner]')!,
+  document.querySelector<HTMLElement>('[data-consent-open]'),
+);
