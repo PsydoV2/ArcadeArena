@@ -1,5 +1,7 @@
 import './landing.css';
 import { Autopilot } from '../engine/autopilot';
+import { RES, useHiRes } from '../engine/draw';
+import { SCREEN_H, SCREEN_W } from '../engine/types';
 import type { Input } from '../engine/input';
 import type { GameDefinition, Round } from '../engine/shell';
 import { Sound } from '../engine/sound';
@@ -104,8 +106,11 @@ const observer = new IntersectionObserver((entries) => {
 
 for (const canvas of document.querySelectorAll<HTMLCanvasElement>('canvas[data-preview]')) {
   const kind = canvas.dataset.preview!;
+  // Wie im Spiel: feines Raster mit RES×RES Pixeln pro Spielpixel
+  canvas.width = SCREEN_W * RES;
+  canvas.height = SCREEN_H * RES;
+  useHiRes(canvas.getContext('2d')!);
   const preview = kind === 'hall' ? hallPreview(canvas) : gamePreview(canvas, GAMES[kind]);
-  canvas.getContext('2d')!.imageSmoothingEnabled = false;
   (canvas as HTMLCanvasElement & { preview?: Preview }).preview = preview;
   previews.push(preview);
 

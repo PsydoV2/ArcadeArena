@@ -110,6 +110,8 @@ export class CosmicSiegeRound implements Round {
     x: Math.floor(rand(0, W)),
     y: Math.floor(rand(16, GROUND_Y)),
     color: Math.random() < 0.3 ? '#3a3360' : '#221e3a',
+    // Ferne Sterne sind nur ein feiner Pixel groß
+    size: Math.random() < 0.6 ? 0.5 : 1,
   }));
 
   constructor(private env: RoundEnv) {
@@ -441,7 +443,7 @@ export class CosmicSiegeRound implements Round {
     g.fillRect(0, 0, W, H);
     for (const s of this.stars) {
       g.fillStyle = s.color;
-      g.fillRect(s.x, s.y, 1, 1);
+      g.fillRect(s.x, s.y, s.size, s.size);
     }
 
     drawText(g, 'SCORE', 8, 4, { color: C.DIM });
@@ -467,6 +469,9 @@ export class CosmicSiegeRound implements Round {
     }
 
     if (this.shot) {
+      // Laser: weißer Kern mit Cyan-Saum
+      g.fillStyle = C.alpha(C.CYAN, 0.55);
+      g.fillRect(this.shot.x - 0.5, this.shot.y + 0.5, 2, SHOT_H);
       g.fillStyle = C.WHITE;
       g.fillRect(this.shot.x, this.shot.y, 1, SHOT_H);
     }
@@ -480,7 +485,11 @@ export class CosmicSiegeRound implements Round {
     }
 
     g.fillStyle = C.GREEN;
-    g.fillRect(0, GROUND_Y, W, 1);
+    g.fillRect(0, GROUND_Y, W, 0.5);
+    g.fillStyle = C.shade(C.GREEN, -0.55);
+    g.fillRect(0, GROUND_Y + 0.5, W, 0.5);
+    g.fillStyle = C.shade(C.GREEN, -0.8);
+    for (let x = 0; x < W; x += 3) g.fillRect(x, GROUND_Y + 1, 1.5, 0.5);
     drawText(g, 'LIVES', 8, GROUND_Y + 8, { color: C.DIM });
     for (let i = 0; i < Math.min(this.lives, 8); i++) g.drawImage(SPR.player, 44 + i * 17, GROUND_Y + 7);
     drawText(g, 'ESC = HALL', W - 8, H - 12, { color: '#3e3566', align: 'right' });

@@ -1,4 +1,4 @@
-import { RES, strokeRect, useHiRes } from '../engine/draw';
+import { fillCircle, RES, strokeRect, useHiRes } from '../engine/draw';
 import { drawText, textWidth } from '../engine/font';
 import { ScoreBoard, type ScoreEntry } from '../engine/highscores';
 import type { Input } from '../engine/input';
@@ -463,7 +463,7 @@ export class Hall {
     const cy = Math.round(this.cam.y);
     g.save();
     g.translate(-cx, -cy);
-    g.drawImage(this.floor, 0, 0);
+    g.drawImage(this.floor, 0, 0, this.mapPxW, this.mapPxH);
     this.drawSign(g);
 
     // Lichtkegel vor dem Automaten, an dem man steht
@@ -471,11 +471,11 @@ export class Hall {
     if (lit) {
       g.fillStyle = C.alpha(lit.info.color, 0.16);
       const f = this.frontOf(lit);
-      for (let k = 0; k < 6; k++) g.fillRect(f.x - 20 + k * 2, f.y - 10 + k * 3, 40 - k * 4, 3);
+      for (let k = 0; k < 12; k++) g.fillRect(f.x - 20 + k, f.y - 10 + k * 1.5, 40 - k * 2, 1.5);
     } else if (this.nearDeck || this.hoverDeck) {
       g.fillStyle = C.alpha(this.deckColor, 0.16);
       const f = this.deckFront();
-      for (let k = 0; k < 6; k++) g.fillRect(f.x - 44 + k * 2, f.y - 10 + k * 3, 88 - k * 4, 3);
+      for (let k = 0; k < 12; k++) g.fillRect(f.x - 44 + k, f.y - 10 + k * 1.5, 88 - k * 2, 1.5);
     }
 
     // Nach Tiefe sortiert: was weiter unten steht, verdeckt das Dahinterliegende
@@ -521,8 +521,18 @@ export class Hall {
     // Seltenes, kurzes Flackern – Atmosphäre, aber nicht hektisch
     const flicker = this.t % 9 > 8.7 && Math.floor(this.t * 20) % 2 === 0;
     const x = this.mapPxW / 2;
-    g.fillStyle = C.alpha(C.MAGENTA, 0.08);
-    g.fillRect(x - 84, 2, 168, 20);
+    // Schildträger mit Neonrahmen und Schrauben
+    box(g, x - 82, 2, 164, 19, '#0e0820');
+    g.fillStyle = C.alpha(C.MAGENTA, flicker ? 0.03 : 0.08);
+    g.fillRect(x - 80, 4, 160, 15);
+    g.fillStyle = C.alpha(C.MAGENTA, flicker ? 0.15 : 0.5);
+    g.fillRect(x - 80.5, 3.5, 161, F);
+    g.fillRect(x - 80.5, 19, 161, F);
+    g.fillStyle = '#5a5078';
+    for (const bx of [x - 81, x + 80]) {
+      g.fillRect(bx, 4, F, F);
+      g.fillRect(bx, 18, F, F);
+    }
     drawText(g, 'ARCADE ARENA', x, 6, { scale: 2, color: flicker ? '#5a1a58' : C.MAGENTA, align: 'center', glow: !flicker });
   }
 
@@ -538,44 +548,94 @@ export class Hall {
     s.info.attract?.(sg, 0, 0, 80, 36, this.t + s.index * 0.7);
 
     g.fillStyle = 'rgba(0,0,0,0.45)';
-    g.fillRect(x + 1, y + CAB_H, CAB_W - 2, 3);
+    g.fillRect(x + 1, y + CAB_H, CAB_W - 2, 2);
+    g.fillStyle = 'rgba(0,0,0,0.2)';
+    g.fillRect(x + 3, y + CAB_H + 2, CAB_W - 6, 1);
 
-    // Deckel und leuchtendes Marquee
-    g.fillStyle = '#2a1d4a';
-    g.fillRect(x, y, CAB_W, 3);
+    // Gehäuse: Seitenwände mit Licht links und Schatten rechts, farbige Kantenleisten
+    box(g, x, y + 9, CAB_W, CAB_H - 9, BODY);
+    g.fillStyle = '#271a48';
+    g.fillRect(x + F, y + 9, 1.5, CAB_H - 9);
+    g.fillStyle = '#110a22';
+    g.fillRect(x + CAB_W - 2, y + 9, 1.5, CAB_H - 9);
+    g.fillStyle = C.alpha(color, 0.75);
+    g.fillRect(x, y + 9, F, CAB_H - 9);
+    g.fillRect(x + CAB_W - F, y + 9, F, CAB_H - 9);
+
+    // Deckel und leuchtendes Marquee mit Zierband
+    box(g, x, y, CAB_W, 3, '#2a1d4a');
     g.fillStyle = C.alpha(color, 0.9);
     g.fillRect(x + 1, y + 3, CAB_W - 2, 6);
-    g.fillStyle = 'rgba(255,255,255,0.4)';
-    g.fillRect(x + 2, y + 4, CAB_W - 4, 1);
-    g.fillStyle = BODY;
-    g.fillRect(x, y + 9, CAB_W, CAB_H - 9);
-    g.fillStyle = C.alpha(color, 0.6);
-    g.fillRect(x, y + 9, 1, CAB_H - 9);
-    g.fillRect(x + CAB_W - 1, y + 9, 1, CAB_H - 9);
+    g.fillStyle = 'rgba(255,255,255,0.55)';
+    g.fillRect(x + 1.5, y + 3.5, CAB_W - 3, F);
+    g.fillStyle = 'rgba(255,255,255,0.25)';
+    g.fillRect(x + 1.5, y + 4, CAB_W - 3, F);
+    g.fillStyle = C.shade(color, -0.4);
+    g.fillRect(x + 1, y + 7, CAB_W - 2, 1.5);
+    g.fillStyle = 'rgba(255,255,255,0.6)';
+    for (let k = 2; k < CAB_W - 2; k += 2) g.fillRect(x + k + 0.5, y + 7.5, F, F);
+    g.fillStyle = C.shade(color, -0.6);
+    g.fillRect(x + 1, y + 8.5, CAB_W - 2, F);
 
-    // Bildschirm mit laufender Demo
+    // Bildschirm mit abgerundetem Rahmen, Röhrenschein und Glasreflex
     g.fillStyle = '#08050f';
     g.fillRect(x + 3, y + 11, 24, 14);
+    g.fillStyle = BODY;
+    for (const [cx, cy] of [[x + 3, y + 11], [x + 27 - F, y + 11], [x + 3, y + 25 - F], [x + 27 - F, y + 25 - F]]) {
+      g.fillRect(cx, cy, F, F);
+    }
+    g.fillStyle = '#2a1d4a';
+    g.fillRect(x + 3.5, y + 25, 23, F);
+    g.fillStyle = C.alpha(color, 0.3);
+    g.fillRect(x + 3.5, y + 12.5, 23, F);
+    g.fillRect(x + 3.5, y + 23, 23, F);
     g.drawImage(s.screen, x + 4, y + 13, 22, 10);
-    g.fillStyle = 'rgba(255,255,255,0.12)';
-    g.fillRect(x + 5, y + 12, 7, 1);
+    g.fillStyle = 'rgba(255,255,255,0.16)';
+    g.fillRect(x + 4.5, y + 13, 6, F);
+    g.fillRect(x + 4, y + 13.5, F, 3);
 
-    // Bedienfeld mit Joystick und Knöpfen
-    g.fillStyle = '#3a2a68';
-    g.fillRect(x + 1, y + 27, CAB_W - 2, 5);
+    // Bedienfeld: schräge Oberseite, Joystick mit Kugelgriff, Knöpfe mit Glanz
+    box(g, x + 1, y + 26.5, CAB_W - 2, 3, '#4a3880');
+    box(g, x + 1, y + 29.5, CAB_W - 2, 2.5, '#2a1f52');
+    g.fillStyle = '#120b24';
+    g.fillRect(x + 6, y + 28, 3, 1);
+    g.fillStyle = '#8a80a8';
+    g.fillRect(x + 7, y + 25.5, 1, 3);
+    g.fillStyle = '#d8d0f0';
+    g.fillRect(x + 7, y + 25.5, F, 3);
     g.fillStyle = C.RED;
-    g.fillRect(x + 7, y + 28, 2, 2);
-    g.fillStyle = C.YELLOW;
-    g.fillRect(x + 17, y + 29, 2, 2);
-    g.fillStyle = C.RED;
-    g.fillRect(x + 21, y + 29, 2, 2);
+    g.fillRect(x + 7, y + 24, 1, F);
+    g.fillRect(x + 6.5, y + 24.5, 2, 1);
+    g.fillRect(x + 7, y + 25.5, 1, F);
+    g.fillStyle = '#ffd0d8';
+    g.fillRect(x + 7, y + 24.5, F, F);
+    button(g, x + 16, y + 27.5, C.YELLOW);
+    button(g, x + 20, y + 27.5, C.RED);
+    button(g, x + 24, y + 27.5, C.WHITE);
 
-    // Münztür
+    // Lautsprechergitter
     g.fillStyle = '#0b0716';
-    g.fillRect(x + 10, y + 35, 10, 8);
-    g.fillStyle = active && this.t % 1 < 0.5 ? C.WHITE : C.RED;
-    g.fillRect(x + 12, y + 37, 1, 3);
-    g.fillRect(x + 17, y + 37, 1, 3);
+    for (let k = 0; k < 9; k++) {
+      g.fillRect(x + 8 + k * 1.5, y + 32.5, F, F);
+      g.fillRect(x + 8.5 + k * 1.5, y + 33.5, F, F);
+    }
+
+    // Münztür mit beleuchteten Einwurfschlitzen
+    box(g, x + 10, y + 35, 10, 8, '#0b0716', '#2a1d4a', '#05030a');
+    const slot = active && this.t % 1 < 0.5 ? C.WHITE : C.RED;
+    for (const sx of [x + 11.5, x + 16]) {
+      box(g, sx, y + 36.5, 2.5, 4, '#2a2046');
+      g.fillStyle = C.alpha(slot, 0.3);
+      g.fillRect(sx + F, y + 37, 1.5, 3);
+      g.fillStyle = slot;
+      g.fillRect(sx + 1, y + 37, F, 3);
+    }
+
+    // Sockel
+    g.fillStyle = '#0d0820';
+    g.fillRect(x + F, y + CAB_H - 2, CAB_W - 1, 2);
+    g.fillStyle = '#2a1d4a';
+    g.fillRect(x + F, y + CAB_H - 2, CAB_W - 1, F);
 
     if (active) {
       const pulse = 0.55 + 0.45 * Math.sin(this.t * 5);
@@ -589,45 +649,107 @@ export class Hall {
     const y = Math.round(this.player.y) - 16;
     const f = this.walking ? Math.floor(this.t * 7) % 2 : 0;
     const face = this.face;
+    const side = face === DIRS.left || face === DIRS.right;
+    // Seitenansicht ist nach rechts gezeichnet, nach links wird gespiegelt
+    const flip = face === DIRS.left;
     const px = (cx: number, cy: number, w: number, h: number, c: string) => {
       g.fillStyle = c;
-      g.fillRect(x + cx, y + cy, w, h);
+      g.fillRect(x + (flip ? 12 - cx - w : cx), y + cy, w, h);
     };
+    const SKIN = '#f0c8a0';
+    const SKIN_D = '#d09a78';
+    const HAIR = '#5a3a1a';
+    const HAIR_L = '#7a5228';
+    const JEANS = '#3a3a8a';
+    const JEANS_D = '#2a2a66';
+    const SHIRT_D = '#c8702a';
+    const SHIRT_L = '#ffc07a';
+    const CAP_D = '#2ab8c8';
+    const CAP_L = '#b8fbff';
+    const EYE = '#1a1020';
+    const MOUTH = '#b06a5a';
 
-    px(1, 15, 10, 2, 'rgba(0,0,0,0.4)');
-    // Beine
-    const legA = f ? 2 : 3;
-    const legB = f ? 3 : 2;
-    px(3, 12, 2, legA, '#3a3a8a');
-    px(7, 12, 2, legB, '#3a3a8a');
-    px(3, 12 + legA, 2, 1, '#1a1a2a');
-    px(7, 12 + legB, 2, 1, '#1a1a2a');
-    // Körper und Arme
+    px(1.5, 15.5, 9, 1, 'rgba(0,0,0,0.35)');
+    px(2.5, 15, 7, F, 'rgba(0,0,0,0.2)');
+    // Beine mit Schuhen
+    const legs: [number, number][] = [
+      [3, f ? 2 : 3],
+      [7, f ? 3 : 2],
+    ];
+    for (const [lx, len] of legs) {
+      px(lx, 12, 2, len, JEANS);
+      px(lx + 1.5, 12, F, len, JEANS_D);
+      px(lx, 12 + len, 2, 1, '#1a1a2a');
+      px(lx, 12 + len, 1, F, '#4a4a66');
+    }
+    // T-Shirt mit Schatten, Saum und Brustlogo
     px(2, 7, 8, 5, C.ORANGE);
-    if (face === DIRS.left || face === DIRS.right) {
-      px(face.x > 0 ? 6 : 4, 8 + f, 2, 3, '#f0c8a0');
+    px(2, 7, F, 4.5, SHIRT_L);
+    px(9.5, 7, F, 5, SHIRT_D);
+    px(2, 11.5, 8, F, SHIRT_D);
+    if (face === DIRS.down) {
+      px(4.5, 7, 3, F, SKIN_D);
+      px(5.5, 8.5, 1, 1, C.MAGENTA);
+      px(5.5, 8.5, F, F, '#ffb0f8');
+    }
+    // Arme schwingen beim Laufen
+    if (side) {
+      px(6, 7, 2, 1.5, SHIRT_D);
+      px(6, 8 + f, 2, 3, SKIN);
+      px(7.5, 8 + f, F, 3, SKIN_D);
     } else {
-      px(1, 8 + f, 1, 3, '#f0c8a0');
-      px(10, 8 + (1 - f), 1, 3, '#f0c8a0');
+      px(1, 7, 1, 1.5, C.ORANGE);
+      px(10, 7, 1, 1.5, SHIRT_D);
+      px(1, 8 + f, 1, 3, SKIN);
+      px(10, 8 + (1 - f), 1, 3, SKIN);
+      px(10.5, 8 + (1 - f), F, 3, SKIN_D);
     }
     // Kopf
     if (face === DIRS.up) {
-      px(3, 3, 6, 4, '#5a3a1a');
+      px(3, 3, 6, 4, HAIR);
+      px(4, 4, F, 2, HAIR_L);
+      px(6, 3.5, F, 2.5, HAIR_L);
+      px(7.5, 4, F, 2, HAIR_L);
+      px(2.5, 4, F, 1.5, SKIN_D);
+      px(9, 4, F, 1.5, SKIN_D);
     } else {
-      px(3, 3, 6, 4, '#f0c8a0');
+      px(3, 3, 6, 4, SKIN);
+      px(8.5, 3, F, 4, SKIN_D);
+      px(3.5, 6.5, 5, F, SKIN_D);
       if (face === DIRS.down) {
-        px(4, 4, 1, 1, C.BLACK);
-        px(7, 4, 1, 1, C.BLACK);
+        px(3, 3, F, 2, HAIR);
+        px(8.5, 3, F, 2, HAIR);
+        px(4, 4.5, 1, 1, EYE);
+        px(7, 4.5, 1, 1, EYE);
+        px(4, 4.5, F, F, C.WHITE);
+        px(7, 4.5, F, F, C.WHITE);
+        px(3.5, 5.5, F, F, '#f0a090');
+        px(8, 5.5, F, F, '#f0a090');
+        px(5.5, 6, 1, F, MOUTH);
       } else {
-        px(face.x > 0 ? 7 : 4, 4, 1, 1, C.BLACK);
-        px(face.x > 0 ? 3 : 7, 3, 2, 3, '#5a3a1a');
+        px(3, 3, 2, 3, HAIR);
+        px(3.5, 3.5, F, 2, HAIR_L);
+        px(5, 4, 1, 1.5, SKIN_D);
+        px(7.5, 4.5, F, 1, EYE);
+        px(9, 4.5, F, 1, SKIN);
+        px(7.5, 6, 1, F, MOUTH);
       }
     }
     // Kappe mit Schirm
     px(3, 0, 6, 3, C.CYAN);
-    if (face === DIRS.down) px(2, 3, 8, 1, '#2ab8c8');
-    else if (face === DIRS.left) px(1, 2, 3, 1, '#2ab8c8');
-    else if (face === DIRS.right) px(8, 2, 3, 1, '#2ab8c8');
+    px(3.5, 0.5, 2, F, CAP_L);
+    px(5.5, 0, 1, F, CAP_D);
+    px(3, 2.5, 6, F, CAP_D);
+    if (face === DIRS.down) {
+      px(2, 3, 8, 1, CAP_D);
+      px(2, 3, 8, F, C.CYAN);
+    } else if (side) {
+      px(8, 2, 3.5, 1, CAP_D);
+      px(8, 2, 3, F, C.CYAN);
+    } else {
+      px(4.5, 2, 3, F, CAP_D);
+      px(5.5, 2, 1, F, HAIR);
+    }
   }
 
   /** Infofeld unten, wenn man vor einem Automaten steht. */
@@ -702,69 +824,109 @@ export class Hall {
   // ---------- Boden, Wände und Einrichtung ----------
 
   private renderFloor(): HTMLCanvasElement {
+    const w = this.mapPxW;
+    const h = this.mapPxH;
     const c = document.createElement('canvas');
-    c.width = this.mapPxW;
-    c.height = this.mapPxH;
+    c.width = w * RES;
+    c.height = h * RES;
     const g = c.getContext('2d')!;
+    useHiRes(g);
 
-    // Klassischer Spielhallen-Teppich mit Neon-Mustern
-    g.fillStyle = '#140a28';
-    g.fillRect(0, 0, c.width, c.height);
     let seed = 7;
     const rnd = () => {
       seed = (seed * 16807) % 2147483647;
       return seed / 2147483647;
     };
+    const fine = (v: number) => Math.floor(v * RES) / RES;
+
+    // Klassischer Spielhallen-Teppich: feines Gewebe mit Neon-Konfetti
+    g.fillStyle = '#140a28';
+    g.fillRect(0, 0, w, h);
+    for (let i = 0; i < (w * h) / 6; i++) {
+      g.fillStyle = rnd() < 0.5 ? '#1a0f33' : '#0f0720';
+      g.fillRect(fine(rnd() * w), fine(rnd() * h), F, F);
+    }
     const colors = [C.CYAN, C.MAGENTA, C.YELLOW, C.GREEN];
-    for (let i = 0; i < (c.width * c.height) / 170; i++) {
-      const x = Math.floor(rnd() * c.width);
-      const y = Math.floor(rnd() * c.height);
-      g.fillStyle = C.alpha(colors[Math.floor(rnd() * colors.length)], 0.16 + rnd() * 0.1);
-      const shape = Math.floor(rnd() * 4);
-      if (shape === 0) g.fillRect(x, y, 3, 1);
-      else if (shape === 1) g.fillRect(x, y, 1, 3);
-      else if (shape === 2) {
-        g.fillRect(x, y, 1, 1);
-        g.fillRect(x + 1, y + 1, 1, 1);
-        g.fillRect(x + 2, y, 1, 1);
-      } else {
-        g.fillRect(x, y, 2, 2);
+    for (let i = 0; i < (w * h) / 170; i++) {
+      const x = fine(rnd() * w);
+      const y = fine(rnd() * h);
+      g.fillStyle = C.alpha(colors[Math.floor(rnd() * colors.length)], 0.18 + rnd() * 0.12);
+      stamp(g, CONFETTI[Math.floor(rnd() * CONFETTI.length)], x, y);
+    }
+
+    // Farbiger Lichtschein der Bildschirme auf dem Teppich vor jedem Automaten
+    for (const s of this.spots) {
+      const cx = s.x + CAB_W / 2;
+      const cy = s.y + CAB_H + 6;
+      g.fillStyle = C.alpha(s.info.color, 0.03);
+      for (let k = 1; k <= 3; k++) {
+        const rx = 6 * k + 3;
+        const ry = 2.5 * k;
+        for (let dy = -ry; dy < ry; dy += F) {
+          const half = fine(rx * Math.sqrt(1 - ((dy + F / 2) / ry) ** 2));
+          g.fillRect(cx - half, cy + dy, half * 2, F);
+        }
       }
     }
 
-    // Wände
-    const wall = (x: number, y: number, w: number, h: number) => {
-      g.fillStyle = '#1a1030';
-      g.fillRect(x, y, w, h);
-    };
-    wall(0, 0, c.width, 2 * T);
-    g.fillStyle = '#22163e';
-    for (let x = 0; x < c.width; x += 24) g.fillRect(x, 0, 1, 2 * T);
-    g.fillStyle = C.alpha(C.MAGENTA, 0.7);
-    g.fillRect(0, 2 * T - 2, c.width, 1);
-    g.fillStyle = C.alpha(C.CYAN, 0.5);
-    g.fillRect(0, 2 * T - 4, c.width, 1);
-    wall(0, 0, T, c.height);
-    wall(c.width - T, 0, T, c.height);
-    wall(0, c.height - T, c.width, T);
-    g.fillStyle = C.alpha(C.CYAN, 0.4);
-    g.fillRect(T - 1, 2 * T, 1, c.height - 3 * T);
-    g.fillRect(c.width - T, 2 * T, 1, c.height - 3 * T);
+    // Rückwand: Vertäfelung mit Fugen und Maserung, zwei Neonröhren, Sockelleiste
+    g.fillStyle = '#1a1030';
+    g.fillRect(0, 0, w, 2 * T);
+    for (let x = 0; x < w; x += 24) {
+      g.fillStyle = '#0f0820';
+      g.fillRect(x, 0, F, 2 * T - 5);
+      g.fillStyle = '#271a44';
+      g.fillRect(x + F, 0, F, 2 * T - 5);
+      g.fillStyle = '#1e1338';
+      for (let k = 0; k < 3; k++) g.fillRect(x + 5 + k * 6.5, 2 + (k % 2) * 3, F, 2 * T - 12);
+    }
+    tube(g, 0, 2 * T - 4.5, w, F, C.CYAN);
+    tube(g, 0, 2 * T - 2.5, w, F, C.MAGENTA);
+    g.fillStyle = '#0a0614';
+    g.fillRect(0, 2 * T - 1, w, 1);
 
-    // Tür mit Fußmatte und Ausgangsschild
+    // Seitenwände und Vorderwand mit feiner Struktur und Kante zum Raum
+    const wall = (x: number, y: number, ww: number, hh: number) => {
+      g.fillStyle = '#1a1030';
+      g.fillRect(x, y, ww, hh);
+      g.fillStyle = '#150c2a';
+      for (let k = y + 4; k < y + hh; k += 8) g.fillRect(x, k, ww, F);
+    };
+    wall(0, 2 * T, T, h - 2 * T);
+    wall(w - T, 2 * T, T, h - 2 * T);
+    wall(0, h - T, w, T);
+    g.fillStyle = '#2a1d4a';
+    g.fillRect(0, h - T, w, F);
+    tube(g, T - 1, 2 * T, F, h - 3 * T, C.CYAN, 0.6);
+    tube(g, w - T + F, 2 * T, F, h - 3 * T, C.CYAN, 0.6);
+
+    // Glastür mit Griffstangen, Fußmatte und Ausgangsschild
     const dx = DOOR_COLS[0] * T;
-    const dy = c.height - T;
-    g.fillStyle = '#0a1830';
-    g.fillRect(dx, dy, 2 * T, T);
-    g.fillStyle = '#16284a';
-    g.fillRect(dx + 2, dy + 2, 2 * T - 4, T - 2);
-    g.fillStyle = '#3a2a1a';
-    g.fillRect(dx - 2, dy - 12, 2 * T + 4, 10);
+    const dy = h - T;
+    box(g, dx, dy, 2 * T, T, '#0a1830', '#2a4a7a', '#05101e');
+    for (const px of [dx + 1.5, dx + T + F]) {
+      box(g, px, dy + 1.5, T - 2, T - 1.5, '#16284a', '#0e1c36', '#2a4470');
+      g.fillStyle = 'rgba(200,230,255,0.18)';
+      for (let k = 0; k < 6; k++) g.fillRect(px + 2 + k * F, dy + 2 + k, F, 1);
+      g.fillStyle = '#8a90b0';
+      g.fillRect(px + 2, dy + 8, T - 6, F);
+      g.fillStyle = '#c8cce0';
+      g.fillRect(px + 2, dy + 8, 2, F);
+    }
+    g.fillStyle = '#05101e';
+    g.fillRect(dx + T - F, dy + 1, 1, T - 1);
+
+    box(g, dx - 2, dy - 12, 2 * T + 4, 10, '#3a2a1a', '#5a4028', '#24180e');
     g.fillStyle = '#5a3a2a';
-    for (let k = 0; k < 2 * T + 4; k += 3) g.fillRect(dx - 2 + k, dy - 11, 1, 8);
-    // Leuchtendes Ausgangsschild an der Wand neben der Tür
-    g.fillStyle = '#0a2a14';
-    g.fillRect(dx - 34, dy + 3, 28, 11);
+    for (let k = 1; k < 2 * T + 3; k += 1.5) g.fillRect(dx - 2 + k, dy - 11, F, 8);
+    g.fillStyle = '#2a1c10';
+    g.fillRect(dx - 1, dy - 11, 2 * T + 2, F);
+    g.fillRect(dx - 1, dy - 3.5, 2 * T + 2, F);
+
+    box(g, dx - 34, dy + 3, 28, 11, '#0a2a14', '#14401e', '#04140a');
+    g.fillStyle = C.alpha(C.GREEN, 0.35);
+    g.fillRect(dx - 33, dy + 4, 26, F);
+    g.fillRect(dx - 33, dy + 12.5, 26, F);
     drawText(g, 'EXIT', dx - 20, dy + 5, { color: C.GREEN, align: 'center', glow: true });
     return c;
   }
@@ -774,28 +936,27 @@ export class Hall {
     return music?.playing ? music.current.color : C.CYAN;
   }
 
-  /** Gefüllter Pixelkreis. */
-  private disc(g: CanvasRenderingContext2D, cx: number, cy: number, r: number, color: string) {
-    g.fillStyle = color;
-    for (let dy = -r; dy <= r; dy++) {
-      const w = Math.floor(Math.sqrt(r * r - dy * dy + r * 0.8));
-      g.fillRect(cx - w, cy + dy, 2 * w + 1, 1);
-    }
-  }
-
   /** Schallplatte von oben, dreht sich, solange Musik läuft. */
   private drawRecord(g: CanvasRenderingContext2D, cx: number, cy: number, r: number, color: string, spinning: boolean) {
-    this.disc(g, cx, cy, r, '#1a1626');
-    this.disc(g, cx, cy, r - 1, '#0c0a14');
-    if (r > 8) this.disc(g, cx, cy, Math.round(r * 0.7), '#14111e');
-    this.disc(g, cx, cy, Math.max(1, Math.round(r * 0.35)), color);
+    fillCircle(g, cx, cy, r, '#1a1626');
+    fillCircle(g, cx, cy, r - 1, '#0c0a14');
+    // Rillen
+    if (r > 8) {
+      fillCircle(g, cx, cy, Math.round(r * 0.85), '#110e1a');
+      fillCircle(g, cx, cy, Math.round(r * 0.85) - F, '#0c0a14');
+      fillCircle(g, cx, cy, Math.round(r * 0.7), '#14111e');
+      fillCircle(g, cx, cy, Math.round(r * 0.7) - F, '#0c0a14');
+    }
+    fillCircle(g, cx, cy, Math.max(1, Math.round(r * 0.35)), color);
     g.fillStyle = C.BLACK;
-    g.fillRect(cx, cy, 1, 1);
+    g.fillRect(cx + F / 2, cy + F / 2, F, F);
     // Lichtreflex, der sich mitdreht
     const a = spinning ? this.t * 3.5 : 0.8;
     g.fillStyle = 'rgba(255,255,255,0.35)';
-    for (let k = 0.5; k <= 0.9; k += 0.1) {
-      g.fillRect(Math.round(cx + Math.cos(a) * r * k), Math.round(cy + Math.sin(a) * r * k), 1, 1);
+    for (let k = 0.45; k <= 0.95; k += 0.05) {
+      const fx = Math.round((cx + 0.5 + Math.cos(a) * r * k) * RES) / RES;
+      const fy = Math.round((cy + 0.5 + Math.sin(a) * r * k) * RES) / RES;
+      g.fillRect(fx, fy, F, F);
     }
   }
 
@@ -811,45 +972,71 @@ export class Hall {
     g.fillStyle = 'rgba(0,0,0,0.45)';
     g.fillRect(x, y + 2 * T, w, 3);
     for (const sx of [x + 1, x + w - 17]) {
-      g.fillStyle = '#16102a';
-      g.fillRect(sx, y - 14, 16, 46);
-      g.fillStyle = '#2a2046';
-      g.fillRect(sx, y - 14, 16, 2);
-      this.disc(g, sx + 8, y - 3, 3, '#3a2a68');
-      this.disc(g, sx + 8, y + 15, pump > 0.4 ? 7 : 6, '#2c2050');
-      this.disc(g, sx + 8, y + 15, 2, C.alpha(color, 0.35 + pump * 0.65));
+      box(g, sx, y - 14, 16, 46, '#16102a', '#2a2046', '#0a0618');
+      box(g, sx, y - 14, 16, 2, '#2a2046');
+      fillCircle(g, sx + 7.5, y - 3.5, 3, '#3a2a68');
+      fillCircle(g, sx + 7.5, y - 3.5, 1, '#5a4a88');
+      const r = pump > 0.4 ? 7 : 6;
+      fillCircle(g, sx + 7.5, y + 14.5, r, '#2c2050');
+      fillCircle(g, sx + 7.5, y + 14.5, r - 1, '#221840');
+      fillCircle(g, sx + 7.5, y + 14.5, r - 2.5, '#2c2050');
+      fillCircle(g, sx + 7.5, y + 14.5, 2, C.alpha(color, 0.35 + pump * 0.65));
+      g.fillStyle = 'rgba(255,255,255,0.18)';
+      g.fillRect(sx + 4.5, y + 9.5, 2, F);
+      g.fillRect(sx + 3.5, y + 10, F, 2);
+      // Schrauben in den Ecken
+      g.fillStyle = '#4a3a78';
+      for (const [bx, by] of [[sx + 1.5, y - 11], [sx + 14, y - 11], [sx + 1.5, y + 29.5], [sx + 14, y + 29.5]]) g.fillRect(bx, by, F, F);
     }
 
     // Tisch zwischen den Boxen
     const tx = x + 18;
     const tw = w - 36;
-    g.fillStyle = '#2a1a4a';
-    g.fillRect(tx, y + 8, tw, 2 * T - 8);
-    g.fillStyle = '#3a2a68';
-    g.fillRect(tx, y - 8, tw, 16);
+    box(g, tx, y + 8, tw, 2 * T - 8, '#2a1a4a');
+    box(g, tx, y - 8, tw, 16, '#3a2a68');
     g.fillStyle = C.alpha(color, 0.8);
     g.fillRect(tx, y + 8, tw, 1);
+    g.fillStyle = C.alpha(color, 0.35);
+    g.fillRect(tx, y + 9, tw, F);
     drawText(g, 'RECORDS', tx + tw / 2, y + 16, { color, align: 'center' });
 
     // Plattenspieler mit Tonarm
-    g.fillStyle = '#0e0a1a';
-    g.fillRect(tx + 2, y - 7, 32, 14);
+    box(g, tx + 2, y - 7, 32, 14, '#0e0a1a', '#05030a', '#2a2046');
     this.drawRecord(g, tx + 15, y, 6, color, playing);
     g.fillStyle = '#b8acd8';
     g.fillRect(tx + 29, y - 5, 2, 2);
+    g.fillStyle = '#f4f1ff';
+    g.fillRect(tx + 29, y - 5, F, F);
+    g.fillStyle = '#b8acd8';
     const end = playing ? { x: tx + 19, y: y - 1 } : { x: tx + 30, y: y + 5 };
-    for (let k = 0; k <= 1; k += 0.1) {
-      g.fillRect(Math.round(tx + 30 + (end.x - tx - 30) * k), Math.round(y - 4 + (end.y - y + 4) * k), 1, 1);
+    for (let k = 0; k <= 1; k += 0.05) {
+      const fx = Math.round((tx + 30 + (end.x - tx - 30) * k) * RES) / RES;
+      const fy = Math.round((y - 4 + (end.y - y + 4) * k) * RES) / RES;
+      g.fillRect(fx, fy, F, F);
     }
+    g.fillRect(end.x - F, end.y, 1, 1);
+    // Pitch-Regler und Startknopf
+    g.fillStyle = '#2a2046';
+    g.fillRect(tx + 31.5, y + 1, F, 5);
+    g.fillStyle = C.alpha(color, 0.9);
+    g.fillRect(tx + 31, y + 3, 1.5, F);
+    g.fillStyle = playing ? C.GREEN : '#1a4a22';
+    g.fillRect(tx + 4, y + 4.5, 1, 1);
 
     // Plattenkiste – die aufgelegte Platte fehlt darin
     RECORDS.forEach((rec, i) => {
       const out = playing && music!.index === i;
+      const yy = y - 6 + (i % 2);
       g.fillStyle = out ? '#1a1030' : C.alpha(rec.color, 0.85);
-      g.fillRect(tx + 38 + i * 3, y - 6 + (i % 2), 2, 12);
+      g.fillRect(tx + 38 + i * 3, yy, 2, 12);
+      if (!out) {
+        g.fillStyle = 'rgba(255,255,255,0.35)';
+        g.fillRect(tx + 38 + i * 3, yy, F, 12);
+      }
     });
-    g.fillStyle = '#5a3a2a';
-    g.fillRect(tx + 36, y + 2, 21, 5);
+    box(g, tx + 36, y + 2, 21, 5, '#5a3a2a', '#7a5238', '#3a2418');
+    g.fillStyle = '#3a2418';
+    g.fillRect(tx + 37, y + 4, 19, F);
 
     // Aufsteigende Noten, solange Musik läuft
     if (playing) {
@@ -865,57 +1052,131 @@ export class Hall {
   private drawChanger(g: CanvasRenderingContext2D, x: number, y: number) {
     g.fillStyle = 'rgba(0,0,0,0.45)';
     g.fillRect(x + 2, y + 32, 28, 3);
-    g.fillStyle = '#6a6488';
-    g.fillRect(x + 2, y - 10, 28, 42);
-    g.fillStyle = '#4a4466';
-    g.fillRect(x + 2, y - 10, 28, 3);
-    g.fillStyle = '#0b0716';
-    g.fillRect(x + 6, y - 2, 20, 9);
+    box(g, x + 2, y - 10, 28, 42, '#6a6488', '#8a84a8', '#46405e');
+    box(g, x + 2, y - 10, 28, 3, '#4a4466');
+    g.fillStyle = '#7c76a0';
+    g.fillRect(x + 3, y - 7, 1, 38.5);
+    // Anzeige
+    box(g, x + 6, y - 2, 20, 9, '#0b0716', '#2a2640', '#8a84a8');
     drawText(g, '25', x + 16, y, { color: C.YELLOW, align: 'center' });
-    g.fillStyle = C.YELLOW;
-    g.fillRect(x + 10, y + 12, 12, 3);
-    g.fillStyle = '#2a2640';
-    g.fillRect(x + 8, y + 20, 16, 8);
+    // Münzschale mit ein paar Münzen
+    box(g, x + 9, y + 11, 14, 5, '#2a2640', '#1a1630', '#8a84a8');
+    for (let k = 0; k < 3; k++) {
+      const mx = x + 10.5 + k * 3.5;
+      g.fillStyle = '#c8a020';
+      g.fillRect(mx, y + 13, 2.5, 2);
+      g.fillStyle = C.YELLOW;
+      g.fillRect(mx, y + 13, 2, 1.5);
+      g.fillStyle = '#fff6b0';
+      g.fillRect(mx + F, y + 13, 1, F);
+    }
+    // Geldscheinschlitz mit blinkender Leuchte
+    box(g, x + 8, y + 20, 16, 8, '#2a2640', '#3a3458', '#1a1630');
+    g.fillStyle = '#05030a';
+    g.fillRect(x + 10, y + 23, 12, F);
+    g.fillStyle = '#6a6488';
+    g.fillRect(x + 10, y + 23.5, 12, F);
+    g.fillStyle = this.t % 1.2 < 0.6 ? C.GREEN : '#1a4a22';
+    g.fillRect(x + 21, y + 25.5, 1, 1);
+    g.fillStyle = '#4a4466';
+    for (const [bx, by] of [[x + 3.5, y - 6], [x + 28, y - 6], [x + 3.5, y + 30], [x + 28, y + 30]]) g.fillRect(bx, by, F, F);
   }
 
   private drawSnacks(g: CanvasRenderingContext2D, x: number, y: number) {
     g.fillStyle = 'rgba(0,0,0,0.45)';
     g.fillRect(x + 2, y + 32, 28, 3);
-    g.fillStyle = '#8a1a3a';
-    g.fillRect(x + 2, y - 12, 28, 44);
-    g.fillStyle = '#0a1a2a';
-    g.fillRect(x + 5, y - 8, 18, 30);
+    box(g, x + 2, y - 12, 28, 44, '#8a1a3a', '#b8305a', '#5a0e24');
+    g.fillStyle = '#a82448';
+    g.fillRect(x + 2.5, y - 11.5, 27, 2);
+    // Sichtfenster mit Spiralen und Snacks
+    box(g, x + 5, y - 8, 18, 30, '#0a1a2a', '#05101a', '#1a3a5a');
     const items = [C.YELLOW, C.ORANGE, C.GREEN, C.CYAN, C.RED, C.WHITE];
     for (let r = 0; r < 4; r++) {
+      g.fillStyle = '#1a2a40';
+      g.fillRect(x + 5.5, y - 1 + r * 7, 17, F);
       for (let k = 0; k < 3; k++) {
-        g.fillStyle = items[(r * 3 + k) % items.length];
-        g.fillRect(x + 7 + k * 6, y - 6 + r * 7, 4, 4);
+        const c = items[(r * 3 + k) % items.length];
+        const ix = x + 7 + k * 6;
+        const iy = y - 6 + r * 7;
+        box(g, ix, iy, 4, 4, c, C.shade(c, 0.5), C.shade(c, -0.45));
+        g.fillStyle = C.shade(c, -0.25);
+        g.fillRect(ix + 1, iy + 1.5, 2, 1);
+        g.fillStyle = '#6a7a9a';
+        for (let j = 0; j < 4; j++) g.fillRect(ix + F + j, iy + 4.5, F, 1);
       }
     }
-    g.fillStyle = '#d8d0f0';
-    g.fillRect(x + 25, y - 4, 3, 10);
-    g.fillStyle = '#0b0716';
-    g.fillRect(x + 6, y + 24, 16, 5);
+    g.fillStyle = 'rgba(255,255,255,0.09)';
+    for (let j = 0; j < 27; j++) {
+      g.fillRect(x + 20.5 - j * F, y - 7.5 + j, F, 1);
+      g.fillRect(x + 22 - j * F, y - 7.5 + j, F, 1);
+    }
+    // Tastenfeld und Münzeinwurf
+    box(g, x + 25, y - 4, 3, 10, '#d8d0f0', '#ffffff', '#9a90b8');
+    g.fillStyle = '#5a5070';
+    for (let r = 0; r < 4; r++) for (let k = 0; k < 2; k++) g.fillRect(x + 25.5 + k * 1.5, y - 3 + r * 2, F, F);
+    box(g, x + 25, y + 8, 3, 5, '#2a0a18');
+    g.fillStyle = C.RED;
+    g.fillRect(x + 26.5, y + 9, F, 3);
+    // Ausgabeschacht
+    box(g, x + 6, y + 24, 16, 5, '#0b0716', '#05030a', '#3a1428');
+    g.fillStyle = '#3a3458';
+    g.fillRect(x + 6.5, y + 24.5, 15, F);
   }
 
   private drawCounter(g: CanvasRenderingContext2D, x: number, y: number) {
     const w = 6 * T;
     g.fillStyle = 'rgba(0,0,0,0.45)';
     g.fillRect(x, y + 2 * T, w, 3);
-    g.fillStyle = '#2a1a4a';
-    g.fillRect(x, y + 6, w, 2 * T - 6);
-    g.fillStyle = 'rgba(160,220,255,0.18)';
-    g.fillRect(x + 2, y - 4, w - 4, 12);
-    g.fillStyle = C.alpha(C.CYAN, 0.7);
-    g.fillRect(x + 2, y - 4, w - 4, 1);
-    // Preise in der Vitrine
+    box(g, x, y + 6, w, 2 * T - 6, '#2a1a4a', '#3a2a68', '#160c2c');
+    for (let k = 1; k < 6; k++) {
+      g.fillStyle = '#1a1030';
+      g.fillRect(x + k * 16, y + 9, F, 2 * T - 11);
+      g.fillStyle = '#3a2a68';
+      g.fillRect(x + k * 16 + F, y + 9, F, 2 * T - 11);
+    }
+    // Vitrine mit Preisen: Bälle, Geschenke, Sterne
+    g.fillStyle = 'rgba(160,220,255,0.10)';
+    g.fillRect(x + 2, y - 4, w - 4, 10);
     const prizes = [C.MAGENTA, C.YELLOW, C.GREEN, C.ORANGE, C.CYAN, C.RED, C.WHITE, C.MAGENTA];
     prizes.forEach((p, i) => {
-      g.fillStyle = p;
-      g.fillRect(x + 6 + i * 11, y + (i % 2 ? 0 : 2), 6, 5);
+      const px = x + 6 + i * 11;
+      const py = y + (i % 2 ? 0 : 2);
+      const kind = i % 3;
+      if (kind === 0) {
+        fillCircle(g, px + 2.5, py + 2, 2, p);
+        g.fillStyle = C.shade(p, -0.4);
+        g.fillRect(px + 1, py + 2.5, 4, F);
+        g.fillStyle = C.WHITE;
+        g.fillRect(px + 1.5, py + 1, F, F);
+      } else if (kind === 1) {
+        box(g, px, py, 6, 5, p, C.shade(p, 0.45), C.shade(p, -0.45));
+        g.fillStyle = C.WHITE;
+        g.fillRect(px + 2.5, py, 1, 5);
+        g.fillRect(px, py + 2, 6, F);
+        g.fillRect(px + 1.5, py - 1, 1, 1);
+        g.fillRect(px + 3.5, py - 1, 1, 1);
+      } else {
+        g.fillStyle = p;
+        stamp(g, STAR, px, py - 0.5);
+      }
     });
+    g.fillStyle = 'rgba(255,255,255,0.12)';
+    for (let k = 0; k < 4; k++) {
+      for (let j = 0; j < 8; j++) g.fillRect(x + 10 + k * 24 - j * F, y - 3.5 + j, F, 1);
+    }
+    g.fillStyle = C.alpha(C.CYAN, 0.7);
+    g.fillRect(x + 2, y - 4, w - 4, F);
+    g.fillStyle = C.alpha(C.CYAN, 0.3);
+    g.fillRect(x + 2, y - 3.5, w - 4, F);
+    g.fillRect(x + 2, y - 4, F, 10);
+    g.fillRect(x + w - 2.5, y - 4, F, 10);
+    // Leuchtende Thekenkante
+    g.fillStyle = C.shade(C.YELLOW, 0.6);
+    g.fillRect(x, y + 5.5, w, F);
     g.fillStyle = C.YELLOW;
-    g.fillRect(x, y + 6, w, 1);
+    g.fillRect(x, y + 6, w, F);
+    g.fillStyle = C.shade(C.YELLOW, -0.4);
+    g.fillRect(x, y + 6.5, w, F);
     drawText(g, 'PRIZES', x + w / 2, y + 16, { color: C.YELLOW, align: 'center' });
   }
 
@@ -923,31 +1184,132 @@ export class Hall {
     const w = 5 * T;
     g.fillStyle = 'rgba(0,0,0,0.45)';
     g.fillRect(x + 2, y + T, w - 4, 3);
-    g.fillStyle = '#7a1f6a';
-    g.fillRect(x, y - 8, w, 10);
-    g.fillStyle = '#a02a8a';
-    g.fillRect(x + 4, y + 2, w - 8, 10);
-    g.fillStyle = '#7a1f6a';
-    g.fillRect(x, y - 2, 5, 16);
-    g.fillRect(x + w - 5, y - 2, 5, 16);
-    g.fillStyle = '#c84aa8';
-    g.fillRect(x + 4 + (w - 8) / 2, y + 2, 1, 10);
+    // Rückenlehne mit Knopfheftung
+    box(g, x, y - 8, w, 10, '#7a1f6a', '#9a2a88', '#5a1450');
+    g.fillStyle = '#5a1450';
+    for (let k = 0; k < 8; k++) g.fillRect(x + 7 + k * 9.5, y - 4 + (k % 2) * 2, F, F);
+    g.fillStyle = '#8a2a7a';
+    g.fillRect(x + 1, y - 7, w - 2, F);
+    // Zwei Sitzkissen mit Paspel
+    const sw = (w - 8) / 2;
+    for (const sx of [x + 4, x + 4 + sw]) {
+      box(g, sx, y + 2, sw, 10, '#a02a8a', '#c84aa8', '#7a1f6a');
+      g.fillStyle = '#b8389c';
+      g.fillRect(sx + 1, y + 3, sw - 2, 1.5);
+    }
+    g.fillStyle = '#d86ac0';
+    g.fillRect(x + 4, y + 2, w - 8, F);
+    // Armlehnen
+    box(g, x, y - 2, 5, 16, '#7a1f6a', '#9a2a88', '#5a1450');
+    box(g, x + w - 5, y - 2, 5, 16, '#7a1f6a', '#9a2a88', '#5a1450');
+    g.fillStyle = '#9a2a88';
+    g.fillRect(x + 1, y - 2, 3, 1.5);
+    g.fillRect(x + w - 4, y - 2, 3, 1.5);
   }
 
   private drawPlant(g: CanvasRenderingContext2D, x: number, y: number) {
     g.fillStyle = 'rgba(0,0,0,0.45)';
     g.fillRect(x + 2, y + T, 12, 2);
-    g.fillStyle = '#8a4a2a';
-    g.fillRect(x + 3, y + 6, 10, 10);
+    // Terrakottatopf mit Rand und Zierband
+    box(g, x + 3, y + 6, 10, 10, '#8a4a2a', '#a85a32', '#5a2a18');
+    g.fillStyle = '#6a3420';
+    g.fillRect(x + 3.5, y + 10, 9, F);
     g.fillStyle = '#a85a32';
-    g.fillRect(x + 2, y + 5, 12, 2);
-    g.fillStyle = '#2a9a4a';
-    g.fillRect(x + 6, y - 10, 4, 16);
-    g.fillRect(x + 1, y - 6, 6, 4);
-    g.fillRect(x + 9, y - 8, 6, 4);
-    g.fillRect(x + 2, y - 1, 5, 3);
-    g.fillStyle = '#5ad86a';
-    g.fillRect(x + 7, y - 12, 2, 4);
-    g.fillRect(x + 11, y - 9, 3, 1);
+    g.fillRect(x + 3.5, y + 10.5, 9, F);
+    box(g, x + 2, y + 5, 12, 2, '#a85a32', '#d07a48', '#7a4024');
+    // Kaktus mit Rippen, Armen, Stacheln und Blüte
+    const GREEN = '#2a9a4a';
+    const LIGHT = '#5ad86a';
+    const DARK = '#1a6a32';
+    box(g, x + 6, y - 11, 4, 16.5, GREEN, LIGHT, DARK);
+    g.fillStyle = '#238a40';
+    g.fillRect(x + 7.5, y - 10, F, 14.5);
+    box(g, x + 3, y - 4, 3, 2, GREEN, LIGHT, DARK);
+    box(g, x + 1.5, y - 8, 2, 6, GREEN, LIGHT, DARK);
+    box(g, x + 10, y - 6, 2.5, 2, GREEN, LIGHT, DARK);
+    box(g, x + 11.5, y - 10, 2, 6, GREEN, LIGHT, DARK);
+    g.fillStyle = '#d8ffd8';
+    for (const [sx, sy] of [[5.5, -9], [10, -8], [5.5, -3], [10, 0], [1, -6.5], [13.5, -8.5], [7, -6], [8.5, -1.5]]) {
+      g.fillRect(x + sx, y + sy, F, F);
+    }
+    g.fillStyle = C.MAGENTA;
+    g.fillRect(x + 7, y - 12.5, 2, 1);
+    g.fillRect(x + 7.5, y - 13, 1, 2);
+    g.fillStyle = C.YELLOW;
+    g.fillRect(x + 7.5, y - 12.5, 1, F);
   }
 }
+
+/** Ein feiner Pixel. */
+const F = 1 / RES;
+
+/** Kasten mit feiner Kante: Licht oben und links, Schatten unten und rechts. */
+function box(
+  g: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  base: string,
+  light = C.shade(base, 0.25),
+  dark = C.shade(base, -0.4),
+): void {
+  g.fillStyle = base;
+  g.fillRect(x, y, w, h);
+  g.fillStyle = light;
+  g.fillRect(x, y, w, F);
+  g.fillRect(x, y, F, h);
+  g.fillStyle = dark;
+  g.fillRect(x, y + h - F, w, F);
+  g.fillRect(x + w - F, y, F, h);
+}
+
+/** Runder Arcade-Knopf mit Glanzpunkt und dunklem Rand. */
+function button(g: CanvasRenderingContext2D, x: number, y: number, color: string): void {
+  g.fillStyle = color;
+  g.fillRect(x + F, y, 1, 1.5);
+  g.fillRect(x, y + F, 2, F);
+  g.fillStyle = C.shade(color, -0.5);
+  g.fillRect(x + F, y + 1.5, 1, F);
+  g.fillStyle = C.shade(color, 0.6);
+  g.fillRect(x + F, y, F, F);
+}
+
+/** Neonröhre: heller Kern, farbiger Rand und weicher Schein. */
+function tube(g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, color: string, a = 1): void {
+  const horizontal = w > h;
+  g.fillStyle = C.alpha(color, 0.25 * a);
+  if (horizontal) {
+    g.fillRect(x, y - F, w, F);
+    g.fillRect(x, y + 2 * F, w, F);
+  } else {
+    g.fillRect(x - F, y, F, h);
+    g.fillRect(x + 2 * F, y, F, h);
+  }
+  g.fillStyle = C.alpha(C.shade(color, 0.6), a);
+  g.fillRect(x, y, horizontal ? w : F, horizontal ? F : h);
+  g.fillStyle = C.alpha(color, 0.85 * a);
+  if (horizontal) g.fillRect(x, y + F, w, F);
+  else g.fillRect(x + F, y, F, h);
+}
+
+/** Zeichnet ein Muster aus '#' als feine Pixel in der aktuellen Füllfarbe. */
+function stamp(g: CanvasRenderingContext2D, rows: string[], x: number, y: number): void {
+  rows.forEach((row, j) => {
+    for (let i = 0; i < row.length; i++) if (row[i] === '#') g.fillRect(x + i * F, y + j * F, F, F);
+  });
+}
+
+/** Konfetti-Formen im Teppich (feines Raster). */
+const CONFETTI = [
+  ['.##.', '#..#', '#..#', '.##.'],
+  ['..#..', '.#.#.', '#####'],
+  ['#...#...', '.#.#.#.#', '..#...#.'],
+  ['..#..', '..#..', '##.##', '..#..', '..#..'],
+  ['..##', '.##.', '####', '.##.', '##..'],
+  ['#.#', '...', '.#.'],
+  ['######'],
+  ['#', '#', '#', '#', '#', '#'],
+];
+
+const STAR = ['....##....', '....##....', '...####...', '##########', '.########.', '..######..', '..##..##..', '.##....##.'];

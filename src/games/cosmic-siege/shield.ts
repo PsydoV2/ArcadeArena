@@ -1,3 +1,5 @@
+import { RES } from '../../engine/draw';
+
 export const SHIELD_W = 24;
 export const SHIELD_H = 16;
 
@@ -11,8 +13,8 @@ export class Shield {
   constructor(readonly x: number, readonly y: number, color: string) {
     const n = parseInt(color.slice(1), 16);
     this.rgb = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-    this.canvas.width = SHIELD_W;
-    this.canvas.height = SHIELD_H;
+    this.canvas.width = SHIELD_W * RES;
+    this.canvas.height = SHIELD_H * RES;
     for (let y = 0; y < SHIELD_H; y++) {
       for (let x = 0; x < SHIELD_W; x++) {
         const corner = y < 4 && (x < 4 - y || x > SHIELD_W - 1 - (4 - y));
@@ -46,15 +48,32 @@ export class Shield {
 
   render(g: CanvasRenderingContext2D): void {
     if (this.dirty) {
-      const img = new ImageData(SHIELD_W, SHIELD_H);
-      for (let i = 0; i < this.mask.length; i++) {
-        if (!this.mask[i]) continue;
-        img.data.set([...this.rgb, 255], i * 4);
+      // Im feinen Raster: Ziegelfugen, Glanz an offenen Oberkanten, Schatten an Unterkanten
+      const fw = SHIELD_W * RES;
+      const img = new ImageData(fw, SHIELD_H * RES);
+      const solid = (x: number, y: number) => x >= 0 && y >= 0 && x < SHIELD_W && y < SHIELD_H && this.mask[y * SHIELD_W + x] === 1;
+      for (let fy = 0; fy < SHIELD_H * RES; fy++) {
+        for (let fx = 0; fx < fw; fx++) {
+          const x = Math.floor(fx / RES);
+          const y = Math.floor(fy / RES);
+          if (!solid(x, y)) continue;
+          let f = 1;
+          const top = fy % RES === 0 && !solid(x, y - 1);
+          const bottom = fy % RES === RES - 1 && !solid(x, y + 1);
+          const left = fx % RES === 0 && !solid(x - 1, y);
+          const right = fx % RES === RES - 1 && !solid(x + 1, y);
+          if (top || left) f = 1.5;
+          else if (bottom || right) f = 0.5;
+          else if (fy % 6 === 5 || (fx + (Math.floor(fy / 6) % 2) * 6) % 12 === 0) f = 0.62;
+          const [r, gr, b] = this.rgb;
+          const c = (v: number) => (f > 1 ? v + (255 - v) * (f - 1) : v * f);
+          img.data.set([c(r), c(gr), c(b), 255], (fy * fw + fx) * 4);
+        }
       }
       this.canvas.getContext('2d')!.putImageData(img, 0, 0);
       this.dirty = false;
     }
-    g.drawImage(this.canvas, this.x, this.y);
+    g.drawImage(this.canvas, this.x, this.y, SHIELD_W, SHIELD_H);
   }
 
   private clear(x: number, y: number) {

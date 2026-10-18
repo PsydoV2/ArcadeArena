@@ -89,6 +89,22 @@ export function makeSprite(rows: string[], colors: string | Record<string, strin
   return pixelArtCanvas(c);
 }
 
+/**
+ * Sprite, das im feinen Raster gezeichnet ist (je RES×RES Zeichen ergeben einen Spielpixel).
+ * Nach außen hat es die halbe Größe; auf hochauflösenden Kontexten erscheint das feine Original.
+ */
+export function makeHiResSprite(rows: string[], colors: string | Record<string, string>): Sprite {
+  const hd = makeSprite(rows, colors);
+  const c = document.createElement('canvas');
+  c.width = hd.width / RES;
+  c.height = hd.height / RES;
+  const g = c.getContext('2d')!;
+  g.imageSmoothingEnabled = false;
+  g.drawImage(hd, 0, 0, c.width, c.height);
+  hiRes.set(c, hd);
+  return pixelArtCanvas(c);
+}
+
 /** Pixelgenaue Linie (Bresenham), vorher auf die Canvas-Fläche zugeschnitten. */
 export function line(
   g: CanvasRenderingContext2D,
