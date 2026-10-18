@@ -29,6 +29,15 @@ let sceneT = POWER_ON_TIME;
 // Durch die Tür der Halle geht es zurück zur Startseite
 const hall = new Hall(CABINETS, { g, input, sound, music }, launch, { onLeave: () => location.assign('/') });
 
+// Startlink von den Spielseiten: /play/?game=<id> startet das Spiel sofort,
+// Esc führt dann zurück in die Halle, direkt vor diesen Automaten.
+const startWith = CABINETS.find((c) => c.create && c.id === new URLSearchParams(location.search).get('game'));
+if (startWith) {
+  hall.standAt(startWith.id);
+  launch(startWith);
+  history.replaceState(null, '', location.pathname);
+}
+
 function launch(info: CabinetInfo) {
   sound.stopLoops();
   canvas.style.cursor = 'default';

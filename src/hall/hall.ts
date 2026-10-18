@@ -134,6 +134,15 @@ export class Hall {
     this.pending = null;
   }
 
+  /** Figur direkt vor einen Automaten stellen (Startlink /play/?game=<id>). */
+  standAt(id: string): void {
+    const s = this.spots.find((spot) => spot.info.id === id);
+    if (!s) return;
+    this.player = this.frontOf(s);
+    this.face = DIRS.up;
+    this.cam = this.camTarget();
+  }
+
   // ---------- Aufbau ----------
 
   private block(tx: number, ty: number, w: number, h: number) {

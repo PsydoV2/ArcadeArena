@@ -1,0 +1,412 @@
+[
+  {
+    "id": "cosmic-siege",
+    "title": "Cosmic Siege",
+    "style": "Space Invaders",
+    "genre": ["Fixed shooter", "Arcade"],
+    "seoTitle": "Cosmic Siege | Free Space Invaders-Style Game Online",
+    "h1": "Cosmic Siege: a free Space Invaders-style shooter",
+    "metaDescription": "Play Cosmic Siege free in your browser: stop waves of marching aliens, hide behind shields and hunt the mystery UFO. A retro shooter in the style of Space Invaders.",
+    "description": "A fixed shooter in the style of Space Invaders. Move your cannon, hide behind the shields and stop waves of invaders before they land.",
+    "lead": "Waves of invaders march down the screen, faster with every row you clear. Hide behind the shields, watch for the mystery UFO and stop them before they land.",
+    "howTo": [
+      "You command a laser cannon at the bottom of the screen. Above you, five rows of aliens march sideways in formation. Each time the formation reaches the edge of the screen, it steps down one row closer to the ground.",
+      "Shoot them one by one. The fewer aliens are left, the faster the rest move, so the last few are always the hardest. Four orange shields protect you from enemy fire, but every hit, yours or theirs, chips a piece away.",
+      "From time to time a mystery UFO crosses the top of the screen. Hit it for a bonus between 50 and 300 points. If a single alien reaches the ground, the game is over, no matter how many lives you have left."
+    ],
+    "scoring": [
+      ["Top row alien", "30"],
+      ["Middle row alien", "20"],
+      ["Bottom row alien", "10"],
+      ["Mystery UFO", "50 to 300"],
+      ["Extra life", "at 1,500 points"]
+    ],
+    "tips": [
+      "Clear the outer columns first. A narrower formation needs longer to reach the edge, so it steps down less often.",
+      "Shoot through the bottom of a shield to make a firing slot, then fire from cover.",
+      "The UFO's value depends on how many shots you have fired. Players who count their shots can collect the full 300 points.",
+      "Do not waste shots on the last alien: it is very fast. Wait for it to come toward you and fire early."
+    ],
+    "controls": [
+      ["Move the cannon", "<kbd>←</kbd><kbd>→</kbd>", "D-pad or left stick"],
+      ["Fire", "<kbd>Space</kbd>", "A"]
+    ],
+    "alt": "Cosmic Siege gameplay: rows of aliens march down toward the player's cannon and orange shields",
+    "llms": "fixed shooter in the style of Space Invaders. Arrow keys move, Space fires."
+  },
+  {
+    "id": "star-run",
+    "title": "Star Run",
+    "style": "3D cockpit rail shooter",
+    "genre": ["Rail shooter", "Arcade"],
+    "seoTitle": "Star Run | Free 3D Space Shooter Game Online",
+    "h1": "Star Run: a free 3D cockpit space shooter",
+    "metaDescription": "Play Star Run free in your browser: fly a starfighter through 3D wireframe space, shoot fighters and asteroids and dodge laser fences. A retro cockpit rail shooter.",
+    "description": "A first-person cockpit rail shooter with 3D wireframe graphics. Steer through asteroid fields, shoot enemy fighters and dodge laser fences.",
+    "lead": "Sit in the cockpit and fly through space in 3D. Shoot fighters and asteroids, dodge laser fences and keep your shield up from sector to sector.",
+    "howTo": [
+      "You look out of the cockpit of a starfighter that flies forward on its own. Steer the crosshair with the arrow keys and fire at whatever comes toward you: enemy fighters, large asteroids that take four hits and small rocks that break with one.",
+      "Every collision and every enemy shot costs shield energy. Enemy fighters fire green plasma balls, which you can shoot down as well. Laser fences block half of the screen, and a hint on screen tells you which way to go.",
+      "Clear a sector to earn a bonus for the sector number and for the shield you have left. Your shield then recharges a little and you get one more bomb. Each new sector is longer and faster than the last."
+    ],
+    "scoring": [
+      ["Enemy fighter", "150"],
+      ["Large asteroid (4 hits)", "150"],
+      ["Small asteroid", "50"],
+      ["Enemy plasma ball", "10"],
+      ["Sector clear", "500 × sector + 10 per shield point"]
+    ],
+    "tips": [
+      "Save your bombs for crowded moments: one bomb destroys every rock, fighter and plasma ball on screen, and you can carry up to three.",
+      "Watch for the direction hint as soon as a laser fence appears. Steering early is much safer than steering late.",
+      "Shoot the plasma balls. They are worth only 10 points, but every one you stop saves shield energy, and the shield pays at the end of the sector."
+    ],
+    "controls": [
+      ["Steer", "<kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd>", "D-pad or left stick"],
+      ["Fire", "<kbd>Space</kbd>", "A"],
+      ["Bomb", "<kbd>Shift</kbd>", "B"]
+    ],
+    "alt": "Star Run gameplay: view from a spaceship cockpit with a crosshair, wireframe asteroids and enemy fighters",
+    "llms": "first-person cockpit rail shooter in pseudo-3D. Arrow keys steer, Space fires, Shift drops a bomb."
+  },
+  {
+    "id": "rock-buster",
+    "title": "Rock Buster",
+    "style": "Asteroids",
+    "genre": ["Multidirectional shooter", "Arcade"],
+    "seoTitle": "Rock Buster | Free Asteroids-Style Game Online",
+    "h1": "Rock Buster: a free Asteroids-style space shooter",
+    "metaDescription": "Play Rock Buster free in your browser: turn, thrust and blast drifting rocks into smaller pieces, dodge flying saucers and warp out of trouble. Vector graphics like Asteroids.",
+    "description": "A vector space shooter in the style of Asteroids. Turn, thrust and blast drifting rocks into smaller pieces while flying saucers hunt you.",
+    "lead": "Pilot a tiny ship through a field of drifting rocks. Every hit breaks a rock into smaller, faster pieces, flying saucers take shots at you, and a quick warp gets you out of trouble.",
+    "howTo": [
+      "Your ship starts in the middle of the screen, surrounded by large rocks. Turn left and right, fire your engine to move and shoot in the direction your nose points. Everything wraps around the edges: fly out on the left and you come back on the right.",
+      "A large rock breaks into two medium rocks, a medium one into two small ones, and small rocks vanish. The smaller the rock, the faster it moves and the more points it brings. Clear the screen and the next, bigger wave drifts in.",
+      "Flying saucers appear now and then and fire at you. The big one shoots at random, the small one aims. When there is no way out, press Shift to warp to a random spot on the screen."
+    ],
+    "scoring": [
+      ["Large rock", "20"],
+      ["Medium rock", "50"],
+      ["Small rock", "100"],
+      ["Large saucer", "200"],
+      ["Small saucer", "1,000"],
+      ["Extra life", "every 10,000 points"]
+    ],
+    "tips": [
+      "Do not break every big rock at once. A screen full of small, fast rocks is much harder to survive than a few slow big ones.",
+      "Use short bursts of thrust. Your ship keeps drifting, and a calm ship near the centre is easier to control.",
+      "Warp is a gamble: you may land right next to a rock. Use it only when a hit is certain anyway."
+    ],
+    "controls": [
+      ["Turn", "<kbd>←</kbd><kbd>→</kbd>", "D-pad or left stick"],
+      ["Thrust", "<kbd>↑</kbd>", "D-pad up"],
+      ["Fire", "<kbd>Space</kbd>", "A"],
+      ["Warp", "<kbd>Shift</kbd>", "B"]
+    ],
+    "alt": "Rock Buster gameplay: a small cyan ship among orange wireframe asteroids on a black starfield",
+    "llms": "vector space shooter in the style of Asteroids. Left and right turn, Up thrusts, Space fires, Shift warps."
+  },
+  {
+    "id": "city-defender",
+    "title": "City Defender",
+    "style": "Missile Command",
+    "genre": ["Shooter", "Arcade"],
+    "seoTitle": "City Defender | Free Missile Command-Style Game Online",
+    "h1": "City Defender: a free Missile Command-style game",
+    "metaDescription": "Play City Defender free in your browser: aim the crosshair, fire from three bases and catch falling missiles in the blast to save six cities. In the style of Missile Command.",
+    "description": "A missile defense game in the style of Missile Command. Aim the crosshair, fire from three bases and catch falling missiles in the blast to protect six cities.",
+    "lead": "Missiles rain down on six cities. Move the crosshair, fire from your three bases and catch the attackers in the blast. Some missiles split on the way down.",
+    "howTo": [
+      "Six cities stand on the ground, protected by three missile bases. Enemy missiles fall from the sky toward them. Move the crosshair with the arrow keys and press Space: a missile flies from the nearest base and explodes where the crosshair was.",
+      "Any enemy missile that touches the cloud of an explosion is destroyed. Each base has a limited number of missiles per wave, so every shot should count. From wave three on, some enemy missiles split into several on the way down.",
+      "At the end of each wave, every missile you have left and every city still standing earns bonus points. The point multiplier rises every two waves, up to six times. The game ends when all six cities are gone."
+    ],
+    "scoring": [
+      ["Enemy missile", "25 × wave multiplier"],
+      ["Missile left over", "5 × wave multiplier"],
+      ["City saved", "100 × wave multiplier"],
+      ["Bonus city", "every 10,000 points"]
+    ],
+    "tips": [
+      "Aim a little below a falling missile, not right at it. Your own missile needs time to get there, and the middle base fires the fastest ones.",
+      "One explosion can catch several missiles. Wait until two trails cross, then fire at the crossing point.",
+      "Catch splitting missiles high up, before they divide. After the split you need several shots instead of one."
+    ],
+    "controls": [
+      ["Move the crosshair", "<kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd>", "D-pad or left stick"],
+      ["Fire", "<kbd>Space</kbd>", "A"]
+    ],
+    "alt": "City Defender gameplay: red missile trails fall toward neon cities while colorful explosions fill the sky",
+    "llms": "missile defense game in the style of Missile Command. Arrow keys aim the crosshair, Space fires."
+  },
+  {
+    "id": "garden-guard",
+    "title": "Garden Guard",
+    "style": "Centipede",
+    "genre": ["Shooter", "Arcade"],
+    "seoTitle": "Garden Guard | Free Centipede-Style Game Online",
+    "h1": "Garden Guard: a free Centipede-style shooter",
+    "metaDescription": "Play Garden Guard free in your browser: shoot a caterpillar that splits with every hit, clear mushrooms and dodge the spider and fleas. A retro shooter in the style of Centipede.",
+    "description": "A shooter in the style of Centipede. A caterpillar winds down through a mushroom garden and splits with every hit, while a spider and fleas make life hard.",
+    "lead": "A caterpillar winds its way down through a mushroom garden. Every hit splits it in two and leaves a new mushroom behind, a spider zigzags through your corner and fleas plant more mushrooms.",
+    "howTo": [
+      "You guard the bottom of a garden with a small blaster that can move left, right and a little way up. A long caterpillar enters at the top and winds its way down, turning around every time it bumps into a mushroom or the edge of the screen.",
+      "Every segment you hit turns into a mushroom, and the caterpillar splits into two, each with its own head. Shoot the head for the most points. When the last segment is gone, a new caterpillar arrives in new colors.",
+      "A spider zigzags through your area and is worth more the closer it is when you hit it. Fleas drop straight down and plant new mushrooms on the way. Mushrooms take a few shots to clear."
+    ],
+    "scoring": [
+      ["Caterpillar head", "100"],
+      ["Caterpillar body segment", "10"],
+      ["Spider", "300, 600 or 900 (closer is more)"],
+      ["Flea", "200"],
+      ["Mushroom", "1"],
+      ["Extra life", "every 12,000 points"]
+    ],
+    "tips": [
+      "Keep the bottom of the screen clear of mushrooms. Once the caterpillar reaches your area, it has fewer obstacles to turn on and comes at you quickly.",
+      "Shoot the head when it comes down a column. A stream of shots up one column can take the whole caterpillar apart segment by segment.",
+      "Let the spider come close before you shoot: a point-blank hit is worth 900."
+    ],
+    "controls": [
+      ["Move", "<kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd>", "D-pad or left stick"],
+      ["Fire", "<kbd>Space</kbd>", "A"]
+    ],
+    "alt": "Garden Guard gameplay: a green caterpillar weaves between pink mushrooms toward a yellow blaster at the bottom",
+    "llms": "shooter in the style of Centipede with a splitting caterpillar, mushrooms, a spider and fleas. Arrow keys move, Space fires."
+  },
+  {
+    "id": "moon-lander",
+    "title": "Moon Lander",
+    "style": "Lunar Lander",
+    "genre": ["Simulation", "Arcade"],
+    "seoTitle": "Moon Lander | Free Lunar Lander-Style Game Online",
+    "h1": "Moon Lander: a free Lunar Lander-style game",
+    "metaDescription": "Play Moon Lander free in your browser: turn, fire the engine and touch down gently on a landing pad. Narrow pads pay up to five times. In the style of Lunar Lander.",
+    "description": "A lunar landing game in the style of Lunar Lander. Turn, fire the engine and touch down gently on landing pads worth two, three or five times the points.",
+    "lead": "Steer a lunar module down to the surface. Turn, fire the engine and touch down gently on one of the pads; the narrow ones pay the most.",
+    "howTo": [
+      "Your lander drifts down toward a jagged moon surface. Gravity pulls it down all the time. Turn it left or right and fire the engine to slow down or move sideways. The engine always pushes in the direction the lander points.",
+      "Land on one of the flat pads. You need to be upright and slow: the speed readouts on screen turn green when your horizontal and vertical speed are safe. Touch down anywhere else, or too fast, and the lander crashes.",
+      "Every safe landing earns points times the pad's multiplier, plus 400 fuel for the next approach. When the fuel runs out, the engine stops, so plan your descent."
+    ],
+    "scoring": [
+      ["Landing", "50"],
+      ["Perfect landing", "100"],
+      ["Wide pad", "× 2"],
+      ["Medium pad", "× 3"],
+      ["Narrow pad", "× 5"],
+      ["Fuel left", "bonus"]
+    ],
+    "tips": [
+      "Kill your sideways speed first, high above the ground. Correcting it close to the surface usually means landing tilted.",
+      "Use short engine bursts. A long burn wastes fuel and sends you back up.",
+      "The narrow pad is worth five times, but a safe landing on a wide pad beats a crash on the narrow one."
+    ],
+    "controls": [
+      ["Turn", "<kbd>←</kbd><kbd>→</kbd>", "D-pad or left stick"],
+      ["Fire the engine", "<kbd>Space</kbd> or <kbd>↑</kbd>", "A"]
+    ],
+    "alt": "Moon Lander gameplay: a white wireframe lander descends toward green landing pads on a jagged moon surface",
+    "llms": "lunar landing game in the style of Lunar Lander with landing pads worth x2, x3 and x5. Left and Right turn, Space or Up fires the engine."
+  },
+  {
+    "id": "maze-muncher",
+    "title": "Maze Muncher",
+    "style": "Pac-Man",
+    "genre": ["Maze", "Arcade"],
+    "seoTitle": "Maze Muncher | Free Pac-Man-Style Game Online",
+    "h1": "Maze Muncher: a free Pac-Man-style maze game",
+    "metaDescription": "Play Maze Muncher free in your browser: eat every dot, dodge four imps and turn the tables with power pills. A retro maze chase game in the style of Pac-Man.",
+    "description": "A maze chase game in the style of Pac-Man. Eat every dot, dodge four imps with different personalities and turn the tables with power pills.",
+    "lead": "Eat every dot in the maze. Four imps hunt you, each in its own way. Grab a power pill and the hunters become the hunted.",
+    "howTo": [
+      "Guide the muncher through a neon maze and eat every dot. When the maze is empty, the next level starts with faster imps. A tunnel on each side takes you across to the other side of the screen.",
+      "Four imps leave their house in the middle and chase you. Each has its own personality: some head straight for you, others try to cut you off. Every now and then they stop hunting for a few seconds and scatter to their corners.",
+      "The four large power pills in the corners turn the imps blue for a short time. Now you can eat them, and each one you catch in a row is worth twice as much. Twice per level a bonus fruit appears for a few seconds."
+    ],
+    "scoring": [
+      ["Dot", "10"],
+      ["Power pill", "50"],
+      ["Blue imps in a row", "200, 400, 800, 1,600"],
+      ["Bonus fruit", "100 to 5,000 (rises with the level)"],
+      ["Extra life", "at 10,000 points"]
+    ],
+    "tips": [
+      "Do not eat a power pill as soon as you reach it. Wait until the imps are close, then eat it and turn around: all four in a row are worth 3,000 points.",
+      "Clear the long corridors first and leave the dots near the power pills for last. That keeps an escape route open.",
+      "Use the side tunnels. The imps slow down in them, you do not."
+    ],
+    "controls": [
+      ["Move", "<kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd>", "D-pad or left stick"]
+    ],
+    "alt": "Maze Muncher gameplay: a yellow muncher eats dots in a blue neon maze while four imps chase it",
+    "llms": "maze chase game in the style of Pac-Man. Arrow keys only."
+  },
+  {
+    "id": "neon-serpent",
+    "title": "Neon Serpent",
+    "style": "Snake",
+    "genre": ["Snake", "Arcade"],
+    "seoTitle": "Neon Serpent | Free Snake Game Online",
+    "h1": "Neon Serpent: a free snake game in your browser",
+    "metaDescription": "Play Neon Serpent free in your browser: eat apples to grow, grab bonus stars and never bite yourself. A classic snake game with five wall layouts and arrow-key controls.",
+    "description": "A snake game with five wall layouts and bonus stars. Eat apples to grow longer and faster, and never hit a wall or your own tail.",
+    "lead": "Steer a growing neon serpent around the screen. Every apple makes you longer and faster, walls change from level to level, and bonus stars are worth more the quicker you grab them.",
+    "howTo": [
+      "The serpent moves on its own. You only change its direction with the arrow keys. Steer it to the apple: it grows by one segment and speeds up a little. Hitting a wall or your own body costs a life.",
+      "Eat ten apples to clear a level. Each level has its own wall layout, five in total, and every cleared level pays a bonus. After the fifth layout the walls repeat, but the serpent keeps getting faster.",
+      "Now and then a bonus star appears. It is worth up to 2,000 points, but its value drops every second, so be quick."
+    ],
+    "scoring": [
+      ["Apple", "10 × level"],
+      ["Bonus star", "up to 2,000"],
+      ["Level clear", "500 × level"],
+      ["Lives", "3"]
+    ],
+    "tips": [
+      "Stay near the edges and walls instead of crossing the middle. That keeps the open space free for your growing tail.",
+      "Plan two turns ahead. Most crashes happen when the serpent turns into a corridor it cannot leave.",
+      "Do not chase every star. A star far away is worth little by the time you get there, and the detour can trap you."
+    ],
+    "controls": [
+      ["Steer", "<kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd>", "D-pad or left stick"]
+    ],
+    "alt": "Neon Serpent gameplay: a long green snake winds through a dark grid toward a red apple",
+    "llms": "snake game with five wall layouts and bonus stars. Arrow keys steer."
+  },
+  {
+    "id": "road-hopper",
+    "title": "Road Hopper",
+    "style": "Frogger",
+    "genre": ["Action", "Arcade"],
+    "seoTitle": "Road Hopper | Free Frogger-Style Game Online",
+    "h1": "Road Hopper: a free Frogger-style crossing game",
+    "metaDescription": "Play Road Hopper free in your browser: hop across five lanes of traffic, ride logs and turtles over the river and fill all five homes. In the style of Frogger.",
+    "description": "A road and river crossing game in the style of Frogger. Hop across busy traffic lanes, ride logs and diving turtles over the river and fill all five homes before time runs out.",
+    "lead": "Guide a little hopper across five lanes of traffic, then ride logs and turtles over the river. Watch out: some turtles dive. Fill all five homes before the clock runs out.",
+    "howTo": [
+      "Each press of an arrow key makes the hopper jump one step. First cross a busy road with five lanes of cars and trucks, each lane at its own speed and direction. A strip of grass in the middle is safe.",
+      "Then cross the river. The water itself is deadly, so jump from log to log and from turtle to turtle. They carry you along, and if they carry you off the screen, you lose a life. Turtles that turn red are about to dive.",
+      "At the top are five homes. Reach an empty one to fill it. Every run has a 30-second timer, and the time you have left counts as a bonus. Fill all five homes to clear the level."
+    ],
+    "scoring": [
+      ["Step forward", "10"],
+      ["Reach a home", "50"],
+      ["Time left", "10 per second"],
+      ["All five homes", "1,000 × level"],
+      ["Time per run", "30 seconds"]
+    ],
+    "tips": [
+      "On the road, wait for a gap and then hop through several lanes at once. Stopping in the middle of traffic is risky.",
+      "On the river, plan your route from home to log, not the other way round: pick the empty home first and let the logs bring you there.",
+      "Jump off a red turtle right away. It will dive within a moment."
+    ],
+    "controls": [
+      ["Hop", "<kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd>", "D-pad or left stick"]
+    ],
+    "alt": "Road Hopper gameplay: a green hopper waits at a busy road below a river full of logs and turtles",
+    "llms": "road and river crossing game in the style of Frogger with diving turtles and a timer. Arrow keys hop."
+  },
+  {
+    "id": "brick-blaster",
+    "title": "Brick Blaster",
+    "style": "Breakout",
+    "genre": ["Brick breaker", "Arcade"],
+    "seoTitle": "Brick Blaster | Free Breakout-Style Game Online",
+    "h1": "Brick Blaster: a free Breakout-style brick breaker",
+    "metaDescription": "Play Brick Blaster free in your browser: bounce the ball, smash every brick and catch power-ups like multi ball and wide paddle. A brick breaker in the style of Breakout.",
+    "description": "A brick breaker in the style of Breakout. Bounce the ball with your paddle, smash every brick and catch power-up capsules across hand-built levels.",
+    "lead": "Bounce the ball off your paddle and smash every brick on the wall. Hard bricks need two hits, steel never breaks, and falling capsules bring a wider paddle or extra balls.",
+    "howTo": [
+      "Move the paddle along the bottom of the screen and press Space to launch the ball. It bounces off the walls, the bricks and your paddle. Miss it and you lose a life.",
+      "Each level is a hand-built wall of bricks. Colored bricks break with one hit and pay more the higher their row. Light gray bricks need two hits, steel bricks never break. Clear every breakable brick to move on to the next level.",
+      "Some bricks drop a capsule when they break. Catch it with your paddle for a wider paddle, a multi ball, a slower ball or an extra life."
+    ],
+    "scoring": [
+      ["Colored brick", "points by row"],
+      ["Hard brick (2 hits)", "100"],
+      ["Capsule caught", "50"],
+      ["Level clear", "1,000 × level"],
+      ["Extra life", "at 10,000 points"]
+    ],
+    "tips": [
+      "Where the ball hits the paddle decides its angle. Use the edges of the paddle to aim at the gaps.",
+      "Break a hole through one side of the wall. Once the ball gets above the bricks, it clears them from behind on its own.",
+      "Do not chase every capsule. Losing the ball to catch a power-up is never worth it."
+    ],
+    "controls": [
+      ["Move the paddle", "<kbd>←</kbd><kbd>→</kbd>", "D-pad or left stick"],
+      ["Launch the ball", "<kbd>Space</kbd>", "A"]
+    ],
+    "alt": "Brick Blaster gameplay: a ball bounces between an orange paddle and rows of rainbow-colored bricks",
+    "llms": "brick breaker in the style of Breakout with power-ups. Arrow keys move the paddle, Space launches the ball."
+  },
+  {
+    "id": "gem-cascade",
+    "title": "Gem Cascade",
+    "style": "Columns",
+    "genre": ["Puzzle", "Arcade"],
+    "seoTitle": "Gem Cascade | Free Columns-Style Puzzle Game Online",
+    "h1": "Gem Cascade: a free Columns-style puzzle game",
+    "metaDescription": "Play Gem Cascade free in your browser: drop columns of three gems, swap their order and line up three of a kind across, down or diagonally. A puzzle in the style of Columns.",
+    "description": "A falling gem puzzle in the style of Columns. Drop columns of three gems, swap their order and line up three or more of a kind across, down or diagonally.",
+    "lead": "Columns of three gems fall into the well. Swap their order, slide them left or right and line up three or more of a kind, across, down or diagonally.",
+    "howTo": [
+      "A column of three gems falls into a narrow well. Move it left or right and press Space to rotate the order of the three gems. Press Down to drop faster or Shift to drop it at once.",
+      "When three or more gems of the same kind line up, across, down or diagonally, they disappear. The gems above fall into the gap, and if that creates a new line, it clears too. These chains multiply your points.",
+      "Every gem color also has its own shape, so you can tell them apart even with color blindness. After every 30 cleared gems the level rises and the gems fall faster. The game ends when the well is full."
+    ],
+    "scoring": [
+      ["Cleared gem", "10 × level"],
+      ["Chain reaction", "multiplies the points"],
+      ["Fast drop (Down)", "1 per row"],
+      ["Instant drop (Shift)", "2 per row"],
+      ["New level", "every 30 gems"]
+    ],
+    "tips": [
+      "Keep the middle of the well low. A column that cannot get past a tall stack in the centre ends the game quickly.",
+      "Look for diagonals. They are easy to miss and often clear gems that are stuck at the sides.",
+      "Build chains on purpose: leave a pair of the same kind just above a line you are about to clear."
+    ],
+    "controls": [
+      ["Move", "<kbd>←</kbd><kbd>→</kbd>", "D-pad or left stick"],
+      ["Drop faster", "<kbd>↓</kbd>", "D-pad down"],
+      ["Rotate the gem order", "<kbd>Space</kbd>", "A"],
+      ["Drop at once", "<kbd>Shift</kbd>", "B"]
+    ],
+    "alt": "Gem Cascade gameplay: a narrow well filling with colorful gems of different shapes while a column of three falls",
+    "llms": "falling gem puzzle in the style of Columns, each gem color has its own shape. Left and Right move, Down speeds up, Space swaps the order, Shift drops."
+  },
+  {
+    "id": "paddle-duel",
+    "title": "Paddle Duel",
+    "style": "Pong",
+    "genre": ["Sports", "Arcade"],
+    "seoTitle": "Paddle Duel | Free Pong Game Against the Computer",
+    "h1": "Paddle Duel: free Pong against the computer",
+    "metaDescription": "Play Paddle Duel free in your browser: table tennis in the style of Pong against four computer opponents from Rookie to Champion. First to seven points wins.",
+    "description": "Table tennis in the style of Pong against four computer opponents of rising skill. First to seven points wins the match.",
+    "lead": "The game that started it all: two paddles, one ball. Play table tennis against four computer opponents, from Rookie to Champion. First to seven points wins.",
+    "howTo": [
+      "You control the paddle on the left with the Up and Down keys. The computer plays on the right. Hit the ball back and get it past your opponent's paddle to score a point.",
+      "The first player to reach seven points wins the match. Every match you win brings a tougher opponent: Rookie, Challenger, Pro and finally the Champion, each faster and more accurate than the last.",
+      "Every return earns a few points, and long rallies raise the value of the point that ends them. Points and match wins are worth more against stronger opponents."
+    ],
+    "scoring": [
+      ["Ball returned", "10"],
+      ["Point won", "100 × match + 5 per rally hit"],
+      ["Match won", "1,000 × match"],
+      ["Opponents", "Rookie, Challenger, Pro, Champion"]
+    ],
+    "tips": [
+      "Hit the ball with the edge of your paddle to send it at a steep angle. Straight returns are easy for the computer.",
+      "Move back toward the middle after every return. From there you reach both corners in time.",
+      "Patience pays: every hit in a rally adds to the value of the point that ends it."
+    ],
+    "controls": [
+      ["Move the paddle", "<kbd>↑</kbd><kbd>↓</kbd>", "D-pad or left stick"]
+    ],
+    "alt": "Paddle Duel gameplay: a cyan paddle on the left and a magenta paddle on the right hit a white ball across a dashed net",
+    "llms": "table tennis in the style of Pong against four computer opponents of rising skill. Up and Down move the paddle."
+  }
+]

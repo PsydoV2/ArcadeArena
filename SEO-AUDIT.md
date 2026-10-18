@@ -5,34 +5,43 @@
 **Seiten geprüft:** 2 (`/`, `/play/`)
 **Gesamtwertung: 74/100**
 
+> **Stand der Umsetzung (2026-10-18):** Durchgestrichene Punkte sind im Code umgesetzt. `robots.txt` und Cache-Header kommen laut Absprache beim Deployen auf den Server und sind daher hier nicht abgehakt. Offen sind noch: die deutsche Version und Backlinks.
+
 Die technische Basis ist ungewöhnlich gut. Die Startseite enthält ihren ganzen Text schon im HTML, die JSON-LD-Daten passen zum sichtbaren Inhalt, und es gibt `llms.txt`, Canonical-Tags, HSTS und gzip. Der größte Mangel liegt im Aufbau der Seite: Für alle 12 Spiele gibt es nur eine einzige URL.
 
 ## Kritisch (sollte behoben werden)
 
 - [ ] **Der Server liefert eine falsche `robots.txt` aus.** Live kommt ein Next.js-Template mit `Disallow: /_next/data/`, `Allow: /*.js$` usw. zurück. Der Build erzeugt aber korrekt `User-agent: * / Allow: /` (siehe `dist/robots.txt`). Irgendetwas auf dem Server überschreibt die Datei, vermutlich Plesk oder ein alter Upload. Im Moment schadet das noch nicht, aber die Datei ist nicht unter deiner Kontrolle. → Datei auf dem Server prüfen oder entfernen.
-- [ ] **Keine eigene Seite pro Spiel.** Alle 12 `VideoGame`-Einträge in `index.html:62-311` zeigen auf dieselbe URL `/play/`. Damit kann keine Seite gezielt für Suchanfragen wie „snake game online free“, „pac-man style game browser“ oder „pong against computer“ ranken. KI-Suchen haben ebenfalls keine URL, die sie für ein bestimmtes Spiel zitieren können. → Pro Spiel eine statische Seite anlegen, z. B. `/games/neon-serpent/`, mit H1, Beschreibung, Steuerung, Screenshot, eigenem `VideoGame`-Schema und einem Startlink wie `/play/?game=neon-serpent`. Die Vite-Multi-Page-Konfiguration und `scripts/add-landing-game.mjs` lassen sich dafür erweitern. **Das bringt mit Abstand am meisten.**
-- [ ] **Veraltete Texte, die für Vertrauen und AEO wichtig sind:**
-  - `play/index.html:7`: Die Meta-Description nennt nur 3 Spiele, es gibt aber 12.
-  - `index.html:348` und `:733`: Die FAQ-Antwort „Are these the original arcade games?“ nennt nur Cosmic Siege, Maze Muncher und Star Run.
-  - `index.html:756`: Der Marken-Hinweis im Footer nennt nur Space Invaders und Pac-Man. Die Seite verwendet aber auch Breakout, Asteroids, Pong, Frogger, Missile Command, Columns, Lunar Lander und Centipede. Das ist auch rechtlich relevant.
+  - *Status:* Die Datei wird beim Deployen eingefügt. Der Build erzeugt keine `robots.txt` mehr. Bitte prüfen, dass die beim Deployen eingefügte Datei nicht mehr das Next.js-Template ist.
+- [x] ~~**Keine eigene Seite pro Spiel.** Alle 12 `VideoGame`-Einträge in `index.html:62-311` zeigen auf dieselbe URL `/play/`. Damit kann keine Seite gezielt für Suchanfragen wie „snake game online free“, „pac-man style game browser“ oder „pong against computer“ ranken. KI-Suchen haben ebenfalls keine URL, die sie für ein bestimmtes Spiel zitieren können. → Pro Spiel eine statische Seite anlegen, z. B. `/games/neon-serpent/`, mit H1, Beschreibung, Steuerung, Screenshot, eigenem `VideoGame`-Schema und einem Startlink wie `/play/?game=neon-serpent`. Die Vite-Multi-Page-Konfiguration und `scripts/add-landing-game.mjs` lassen sich dafür erweitern. **Das bringt mit Abstand am meisten.**~~
+  - *Umgesetzt:* `games/<id>/` aus `scripts/games.json` über `scripts/build-game-pages.mjs`, Startlink `/play/?game=<id>`, Links von der Startseite.
+- [x] ~~**Veraltete Texte, die für Vertrauen und AEO wichtig sind:**~~
+  - ~~`play/index.html:7`: Die Meta-Description nennt nur 3 Spiele, es gibt aber 12.~~
+  - ~~`index.html:348` und `:733`: Die FAQ-Antwort „Are these the original arcade games?“ nennt nur Cosmic Siege, Maze Muncher und Star Run.~~
+  - ~~`index.html:756`: Der Marken-Hinweis im Footer nennt nur Space Invaders und Pac-Man. Die Seite verwendet aber auch Breakout, Asteroids, Pong, Frogger, Missile Command, Columns, Lunar Lander und Centipede. Das ist auch rechtlich relevant.~~
 
 ## Warnungen (sollten behoben werden)
 
-- [ ] **Es gibt keine crawlbaren Bilder.** Alle Spielvorschauen sind `<canvas>`-Elemente. Google Images findet daher nichts, und im Schema fehlen `image` und `screenshot`. → Pro Spiel einen WebP-Screenshot erzeugen. Er kann als Fallback im Canvas oder als `poster` dienen und im JSON-LD verlinkt werden.
-- [ ] **Keine Angabe, wer die Seite gemacht hat.** Es fehlen ein `Person`- oder `Organization`-Schema, `author`/`publisher` im `WebApplication`- und `VideoGame`-Schema sowie `sameAs` (z. B. das GitHub-Repo). Ohne diese Angaben können KI-Suchen die Seite keinem Absender zuordnen. → Eine kleine „About“-Zeile im Footer und das passende Schema ergänzen.
-- [ ] **Die H1 enthält keine Keywords.** „Classic arcade games. No manual required.“ lässt „free“, „browser“ und „online“ weg (`index.html:380`). Der Title deckt das ab, die H1 sollte es auch tun, z. B. „Free retro arcade games in your browser“ mit dem bisherigen Satz als Unterzeile.
+- [x] ~~**Es gibt keine crawlbaren Bilder.** Alle Spielvorschauen sind `<canvas>`-Elemente. Google Images findet daher nichts, und im Schema fehlen `image` und `screenshot`. → Pro Spiel einen WebP-Screenshot erzeugen. Er kann als Fallback im Canvas oder als `poster` dienen und im JSON-LD verlinkt werden.~~
+  - *Umgesetzt:* `public/screens/<id>.webp` über `scripts/screenshots.mjs`. Die Bilder stehen auf den Spielseiten als `<img>` und im JSON-LD (Startseite und Spielseiten).
+- [x] ~~**Keine Angabe, wer die Seite gemacht hat.** Es fehlen ein `Person`- oder `Organization`-Schema, `author`/`publisher` im `WebApplication`- und `VideoGame`-Schema sowie `sameAs` (z. B. das GitHub-Repo). Ohne diese Angaben können KI-Suchen die Seite keinem Absender zuordnen. → Eine kleine „About“-Zeile im Footer und das passende Schema ergänzen.~~
+- [x] ~~**Die H1 enthält keine Keywords.** „Classic arcade games. No manual required.“ lässt „free“, „browser“ und „online“ weg (`index.html:380`). Der Title deckt das ab, die H1 sollte es auch tun, z. B. „Free retro arcade games in your browser“ mit dem bisherigen Satz als Unterzeile.~~
 - [ ] **Gehashte Assets haben kein `Cache-Control`.** `/assets/*.js` wird nur über das ETag revalidiert. → Für `/assets/` `Cache-Control: public, max-age=31536000, immutable` setzen (in `.htaccess` oder in Plesk).
-- [ ] **Die 404-Seite ist die Standardseite von Apache** (HTML 2.0, iso-8859-1). → Eine eigene `404.html` mit Links zur Startseite und zur Halle anlegen.
-- [ ] **`/play/` ist fast leer.** Die Seite enthält nur einen `<noscript>`-Satz, kein OG-Bild und kein Schema. Das ist für eine App in Ordnung. Wird sie geteilt, fehlt aber die Vorschau. → OG- und Twitter-Tags von der Startseite übernehmen.
+  - *Status:* Die `.htaccess` wird beim Deployen eingefügt. Bitte prüfen, dass sie diesen Header für `/assets/` setzt.
+- [x] ~~**Die 404-Seite ist die Standardseite von Apache** (HTML 2.0, iso-8859-1). → Eine eigene `404.html` mit Links zur Startseite und zur Halle anlegen.~~
+  - *Umgesetzt:* `404.html` liegt im Build. Die `.htaccess` beim Deployen braucht dafür `ErrorDocument 404 /404.html`.
+- [x] ~~**`/play/` ist fast leer.** Die Seite enthält nur einen `<noscript>`-Satz, kein OG-Bild und kein Schema. Das ist für eine App in Ordnung. Wird sie geteilt, fehlt aber die Vorschau. → OG- und Twitter-Tags von der Startseite übernehmen.~~
 
 ## Chancen (nice to have)
 
-- [ ] **FAQ-Rich-Results:** Google zeigt sie seit 2023 praktisch nur noch für Behörden- und Gesundheitsseiten. Das Schema ist trotzdem sinnvoll für AEO (ChatGPT, Perplexity, AI Overviews). Es lohnt sich, mehr Fragen in Suchsprache aufzunehmen, z. B. „What free arcade games can I play in my browser?“ oder „Is there a Pac-Man style game I can play online?“
-- [ ] **`sitemap.xml`:** `lastmod` ist immer das Build-Datum (`vite.config.ts:9`), und Google ignoriert unzuverlässige Werte. `priority` wird ohnehin ignoriert. Mit eigenen Spielseiten wächst die Sitemap automatisch.
+- [x] ~~**FAQ-Rich-Results:** Google zeigt sie seit 2023 praktisch nur noch für Behörden- und Gesundheitsseiten. Das Schema ist trotzdem sinnvoll für AEO (ChatGPT, Perplexity, AI Overviews). Es lohnt sich, mehr Fragen in Suchsprache aufzunehmen, z. B. „What free arcade games can I play in my browser?“ oder „Is there a Pac-Man style game I can play online?“~~
+  - *Umgesetzt:* Neue Frage „What free arcade games can I play in my browser?“ mit allen zwölf Spielen und ihren Vorbildern. Eine eigene Pac-Man-Frage gibt es nicht, die Antwort nennt aber „Maze Muncher (Pac-Man style)“.
+- [x] ~~**`sitemap.xml`:** `lastmod` ist immer das Build-Datum (`vite.config.ts:9`), und Google ignoriert unzuverlässige Werte. `priority` wird ohnehin ignoriert. Mit eigenen Spielseiten wächst die Sitemap automatisch.~~
+  - *Umgesetzt:* `lastmod` kommt aus dem letzten Git-Commit, `priority` ist entfernt, die 12 Spielseiten sind enthalten.
 - [ ] **Eine deutsche Version mit `hreflang`:** Die Domain ist `.de` und die Zielgruppe „grew up in arcades“. Deutsche Suchanfragen wie „Retro Spiele kostenlos online“ sind deutlich weniger umkämpft.
 - [ ] **Backlinks und Erwähnungen:** Die Seite liegt auf einer Subdomain einer persönlichen Domain und hat wenig Autorität. Einträge bei itch.io, r/WebGames, Hacker News („Show HN“) und Product Hunt bringen Links und machen die Seite für KI-Suchen sichtbarer.
-- [ ] `og:locale`, `twitter:title` und `twitter:image` fehlen. Twitter greift auf die OG-Tags zurück, die Ergänzung wäre also nur eine Kleinigkeit.
-- [ ] `llms.txt` ist gut. Mit Spielseiten sollte jeder Eintrag einen eigenen Link bekommen.
+- [x] ~~`og:locale`, `twitter:title` und `twitter:image` fehlen. Twitter greift auf die OG-Tags zurück, die Ergänzung wäre also nur eine Kleinigkeit.~~
+- [x] ~~`llms.txt` ist gut. Mit Spielseiten sollte jeder Eintrag einen eigenen Link bekommen.~~
 
 ## Was schon gut ist
 
@@ -46,6 +55,6 @@ Die technische Basis ist ungewöhnlich gut. Die Startseite enthält ihren ganzen
 
 ## Empfohlene Reihenfolge
 
-1. `robots.txt` auf dem Server korrigieren und die veralteten Texte aktualisieren (etwa 15 Minuten).
-2. Seiten pro Spiel mit Screenshots anlegen.
-3. Autor-Schema, Caching-Header und eigene 404-Seite ergänzen.
+1. `robots.txt` auf dem Server korrigieren (beim Deployen) und ~~die veralteten Texte aktualisieren~~ (etwa 15 Minuten).
+2. ~~Seiten pro Spiel mit Screenshots anlegen.~~
+3. ~~Autor-Schema~~, Caching-Header (beim Deployen) und ~~eigene 404-Seite~~ ergänzen.

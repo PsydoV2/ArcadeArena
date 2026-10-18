@@ -1,0 +1,176 @@
+/* Spielseiten: Aufbau wie die Startseite, dazu Brotkrümel, Tabellen und die Liste der anderen Spiele. */
+
+.crumbs {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem var(--gutter) 0;
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+.crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.crumbs li + li::before {
+  content: '›';
+  margin-right: 0.5rem;
+}
+
+.crumbs a {
+  color: var(--muted);
+}
+
+.crumbs a:hover {
+  color: var(--text);
+}
+
+/* Screenshot als Platzhalter, die Live-Vorschau legt sich darüber */
+.gamepage .screen img,
+.gamepage .screen canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+.gamepage .hero h1 {
+  font-size: clamp(2.25rem, 4.4vw, 3.6rem);
+}
+
+/* Spielregeln */
+main > .rules {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  background: var(--surface);
+  max-width: none;
+  padding-left: max(var(--gutter), calc((100vw - 1400px) / 2 + var(--gutter)));
+  padding-right: max(var(--gutter), calc((100vw - 1400px) / 2 + var(--gutter)));
+}
+
+.rules__text p {
+  margin-top: 1.25rem;
+  color: var(--muted);
+  max-width: 60ch;
+}
+
+.rules__tables h3 {
+  font-size: 1.6rem;
+}
+
+.rules__tables h3 + .facts {
+  margin-top: 1rem;
+}
+
+.facts + h3 {
+  margin-top: 2.5rem;
+}
+
+.facts {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.05rem;
+}
+
+.facts th,
+.facts td {
+  padding: 0.7rem 0.75rem 0.7rem 0;
+  border-bottom: 2px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.facts tbody th {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.facts thead th {
+  font-family: var(--display);
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.facts td:last-child {
+  padding-right: 0;
+}
+
+/* Tipps */
+.tips__list {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 70ch;
+  margin: 2rem 0 0;
+  padding-left: 1.75rem;
+  color: var(--muted);
+}
+
+.tips__list li::marker {
+  font-family: var(--display);
+  color: var(--accent);
+}
+
+/* Weitere Spiele */
+.more__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 2rem 1.5rem;
+  margin: 2.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.more__grid a {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.more__grid img {
+  width: 100%;
+  height: auto;
+  margin-bottom: 0.5rem;
+  border: 2px solid var(--line);
+  image-rendering: pixelated;
+  transition: border-color 0.15s ease;
+}
+
+.more__grid a:hover img {
+  border-color: var(--accent);
+}
+
+.more__title {
+  font-family: var(--display);
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+.more__grid a:hover .more__title {
+  color: var(--accent);
+}
+
+.more__style {
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+@media (max-width: 900px) {
+  main > .rules {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .facts {
+    font-size: 0.95rem;
+  }
+}

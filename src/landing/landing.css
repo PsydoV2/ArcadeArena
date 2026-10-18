@@ -316,6 +316,15 @@ main > .hero {
   font-size: 1.1rem;
 }
 
+.game__link {
+  justify-self: start;
+  font-size: 1.05rem;
+}
+
+.game__link::after {
+  content: ' →';
+}
+
 /* So funktioniert's */
 .how__list {
   list-style: none;

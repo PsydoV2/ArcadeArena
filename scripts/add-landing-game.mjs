@@ -1,5 +1,7 @@
-// Trägt ein neues Spiel auf der Landingpage ein: Spielkachel mit Live-Vorschau,
-// strukturierte Daten (JSON-LD), llms.txt und die Vorschau-Zuordnung im Landing-Script.
+// Trägt ein neues Spiel auf der Landingpage ein: Spielkachel mit Live-Vorschau und Link zur Spielseite,
+// strukturierte Daten (JSON-LD), die Vorschau-Zuordnung im Landing-Script und den Screenshot-Eintrag.
+// Für die Spielseite danach einen Eintrag in scripts/games.json anlegen (dort steht auch der llms.txt-Text)
+// und node scripts/screenshots.mjs sowie node scripts/build-game-pages.mjs ausführen.
 //
 // Aufruf: node scripts/add-landing-game.mjs <spec.json>
 // spec: { id, title, module, exportName, genre[], style, description, text, keysHtml, alt, llms }
@@ -38,6 +40,7 @@ insertBefore(
                 ${spec.text}
               </p>
               <p class="keys">${spec.keysHtml}</p>
+              <a class="game__link" href="/games/${spec.id}/">How to play ${spec.title}</a>
             </div>
           </article>
           `,
@@ -47,7 +50,8 @@ insertBefore(
 const ld = {
   '@type': 'VideoGame',
   name: spec.title,
-  url: `${SITE}/play/`,
+  url: `${SITE}/games/${spec.id}/`,
+  image: `${SITE}/screens/${spec.id}.webp`,
   description: spec.description,
   genre: spec.genre,
   gamePlatform: 'Web browser',
@@ -65,8 +69,6 @@ const ldText = JSON.stringify(ld, null, 2)
   .join('\n');
 insertBefore('index.html', '          {\n            "@type": "FAQPage",', `${ldText},\n`, `"name": "${spec.title}"`);
 
-insertBefore('vite.config.ts', '<!-- more-games -->\n', `- ${spec.title}: ${spec.llms}\n`, `- ${spec.title}:`);
-
 insertBefore(
   'src/landing/main.ts',
   '// more-imports',
@@ -75,4 +77,12 @@ insertBefore(
 );
 insertBefore('src/landing/main.ts', '  // more-previews', `  '${spec.id}': ${spec.exportName},\n`, `'${spec.id}':`);
 
-console.log(`added ${spec.title} to the landing page`);
+insertBefore(
+  'scripts/screenshots/capture.ts',
+  '// more-imports',
+  `import { ${spec.exportName} } from '../../src/games/${spec.module}';\n`,
+  `import { ${spec.exportName} }`,
+);
+insertBefore('scripts/screenshots/capture.ts', '  // more-shots', `  ['${spec.id}', ${spec.exportName}, 8],\n`, `['${spec.id}',`);
+
+console.log(`added ${spec.title} to the landing page - now add it to scripts/games.json`);

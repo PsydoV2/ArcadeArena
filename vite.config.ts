@@ -1,9 +1,15 @@
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
 
-/** Öffentliche Adresse der Seite (für sitemap.xml, robots.txt, llms.txt). */
+/** Öffentliche Adresse der Seite (für sitemap.xml und llms.txt). */
 const SITE = 'https://arcadearena.sfalter.de';
+
+/** Spiele mit eigener Seite unter /games/<id>/ (Inhalte: scripts/games.json, Seiten: scripts/build-game-pages.mjs). */
+const GAMES: { id: string; title: string; llms: string }[] = JSON.parse(
+  readFileSync(resolve(__dirname, 'scripts/games.json'), 'utf8'),
+);
 
 /** Datum des letzten Commits, der die Pfade geändert hat (für ein ehrliches lastmod). */
 function lastChanged(...paths: string[]): string {
@@ -14,15 +20,18 @@ function lastChanged(...paths: string[]): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-/** Erzeugt sitemap.xml, robots.txt und llms.txt mit der echten Seitenadresse. */
+/** Erzeugt sitemap.xml und llms.txt mit der echten Seitenadresse (robots.txt kommt beim Deployen dazu). */
 function seoFiles(site: string): Plugin {
+  const gamePages = GAMES.map(
+    (g) => `  <url><loc>${site}/games/${g.id}/</loc><lastmod>${lastChanged(`games/${g.id}`)}</lastmod></url>\n`,
+  ).join('');
+  const gameList = GAMES.map((g) => `- [${g.title}](${site}/games/${g.id}/): ${g.llms}\n`).join('');
   const files: Record<string, string> = {
-    'robots.txt': `User-agent: *\nAllow: /\n\nSitemap: ${site}/sitemap.xml\n`,
     'sitemap.xml': `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>${site}/</loc><lastmod>${lastChanged('index.html')}</lastmod></url>
   <url><loc>${site}/play/</loc><lastmod>${lastChanged('play', 'src')}</lastmod></url>
-</urlset>
+${gamePages}</urlset>
 `,
     'llms.txt': `# Arcade Arena
 
@@ -35,25 +44,15 @@ function seoFiles(site: string): Plugin {
 
 ## Games
 
-- Cosmic Siege: fixed shooter in the style of Space Invaders. Arrow keys move, Space fires.
-- Maze Muncher: maze chase game in the style of Pac-Man. Arrow keys only.
-- Star Run: first-person cockpit rail shooter in pseudo-3D. Arrow keys steer, Space fires, Shift drops a bomb.
-- Brick Blaster: brick breaker in the style of Breakout with power-ups. Arrow keys move the paddle, Space launches the ball.
-- Neon Serpent: snake game with five wall layouts and bonus stars. Arrow keys steer.
-- Rock Buster: vector space shooter in the style of Asteroids. Left and right turn, Up thrusts, Space fires, Shift warps.
-- Paddle Duel: table tennis in the style of Pong against four computer opponents of rising skill. Up and Down move the paddle.
-- Road Hopper: road and river crossing game in the style of Frogger with diving turtles and a timer. Arrow keys hop.
-- City Defender: missile defense game in the style of Missile Command. Arrow keys aim the crosshair, Space fires.
-- Gem Cascade: falling gem puzzle in the style of Columns, each gem color has its own shape. Left and Right move, Down speeds up, Space swaps the order, Shift drops.
-- Moon Lander: lunar landing game in the style of Lunar Lander with landing pads worth x2, x3 and x5. Left and Right turn, Space or Up fires the engine.
-- Garden Guard: shooter in the style of Centipede with a splitting caterpillar, mushrooms, a spider and fleas. Arrow keys move, Space fires.
-<!-- more-games -->
+Each game has its own page with rules, controls, points and tips.
 
+${gameList}
 ## Links
 
 - [Homepage](${site}/): overview, controls and FAQ
 - [Play now](${site}/play/): the arcade hall
-`.replace('<!-- more-games -->\n', ''),
+- Start a game directly: ${site}/play/?game=<id>, for example ${site}/play/?game=${GAMES[0].id}
+`,
   };
   return {
     name: 'seo-files',
@@ -81,6 +80,7 @@ export default defineConfig({
         impressum: resolve(__dirname, 'impressum/index.html'),
         datenschutz: resolve(__dirname, 'datenschutz/index.html'),
         notFound: resolve(__dirname, '404.html'),
+        ...Object.fromEntries(GAMES.map((g) => [`game-${g.id}`, resolve(__dirname, `games/${g.id}/index.html`)])),
       },
     },
   },
