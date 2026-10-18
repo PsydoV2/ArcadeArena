@@ -368,15 +368,18 @@ export class CabinetShell implements ArcadeGame {
 
   private renderTable(g: CanvasRenderingContext2D, y: number, scale: number, pitch: number, max = 10) {
     const blink = this.clock % 0.5 < 0.3;
-    this.ctx.scores
-      .list()
-      .slice(0, max)
-      .forEach((e, i) => {
-        const line = `${String(i + 1).padStart(2, ' ')}. ${e.name}  ${String(e.score).padStart(6, ' ')}`;
-        let color = i === 0 ? C.YELLOW : i < 3 ? C.ORANGE : C.WHITE;
-        if (i === this.rank) color = blink ? C.CYAN : C.WHITE;
-        drawText(g, line, W / 2, y + i * pitch, { scale, color, align: 'center' });
-      });
+    const entries = this.ctx.scores.list().slice(0, max);
+    // Freie Plätze als Striche, damit die Tafel auch ohne Einträge nach Automat aussieht
+    for (let i = entries.length; i < max; i++) {
+      const line = `${String(i + 1).padStart(2, ' ')}. ---  ${'-'.padStart(6, ' ')}`;
+      drawText(g, line, W / 2, y + i * pitch, { scale, color: C.DIM, align: 'center' });
+    }
+    entries.forEach((e, i) => {
+      const line = `${String(i + 1).padStart(2, ' ')}. ${e.name}  ${String(e.score).padStart(6, ' ')}`;
+      let color = i === 0 ? C.YELLOW : i < 3 ? C.ORANGE : C.WHITE;
+      if (i === this.rank) color = blink ? C.CYAN : C.WHITE;
+      drawText(g, line, W / 2, y + i * pitch, { scale, color, align: 'center' });
+    });
   }
 
   private banner(g: CanvasRenderingContext2D, text: string, color: string, lines: string[] = []) {

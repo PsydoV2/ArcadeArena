@@ -64,7 +64,7 @@ function gamePreview(canvas: HTMLCanvasElement, def: GameDefinition): Preview {
   let t = 0;
   const restart = () => {
     pilot = new Autopilot(def.info.controls);
-    round = def.createRound({ input: pilot, audio: SILENT, hiScore: 5000 });
+    round = def.createRound({ input: pilot, audio: SILENT, hiScore: 0 });
     t = 0;
   };
   restart();

@@ -764,7 +764,7 @@ export class Hall {
     g.fillRect(6, PANEL_Y + 6, 86, 42);
     g.drawImage(s.screen, 9, PANEL_Y + 9, 80, 36);
     const best = this.best[s.index];
-    drawText(g, `HI ${best?.name ?? '---'} ${best?.score ?? 0}`, 49, PANEL_Y + 54, { color: info.accent, align: 'center' });
+    drawText(g, best ? `HI ${best.name} ${best.score}` : 'NO SCORE YET', 49, PANEL_Y + 54, { color: info.accent, align: 'center' });
 
     drawText(g, info.title, 102, PANEL_Y + 6, { scale: 2, color: info.color, glow: true });
     drawText(g, info.tagline, 102, PANEL_Y + 24, { color: C.WHITE });

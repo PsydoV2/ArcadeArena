@@ -71,7 +71,7 @@ let n = 0;
 for (const [id, def, seconds] of GAMES) {
   seed(7);
   const pilot = new Autopilot(def.info.controls);
-  const round = def.createRound({ input: pilot, audio: SILENT, hiScore: 5000 });
+  const round = def.createRound({ input: pilot, audio: SILENT, hiScore: 0 });
   for (let i = 0; i < seconds * 60 && !round.over; i++) {
     pilot.tick(STEP);
     round.update(STEP);

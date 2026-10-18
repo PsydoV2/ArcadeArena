@@ -6,8 +6,11 @@ export interface ScoreEntry {
 const MAX_ENTRIES = 10;
 const INITIALS_KEY = 'arcadearena.initials';
 
-/** Vorbelegung wie bei echten Automaten, damit es von Anfang an etwas zu schlagen gibt. */
-const DEFAULTS: ScoreEntry[] = [
+/**
+ * Frühere Vorbelegung der Tafeln. Sie steht nicht mehr auf neuen Tafeln, wird aber noch
+ * aus bereits gespeicherten Tafeln entfernt, damit dort nur eigene Ergebnisse bleiben.
+ */
+const OLD_DEFAULTS: ScoreEntry[] = [
   ['ACE', 5000], ['BOB', 4000], ['CAT', 3000], ['DAN', 2500], ['EVE', 2000],
   ['FOX', 1500], ['GUS', 1000], ['HAL', 800], ['IVY', 600], ['JOE', 400],
 ].map(([name, score]) => ({ name: name as string, score: score as number }));
@@ -67,12 +70,17 @@ export class ScoreBoard {
       const raw = localStorage.getItem(this.key);
       if (raw) {
         const data: unknown = JSON.parse(raw);
-        if (Array.isArray(data)) return data.filter(isEntry).slice(0, MAX_ENTRIES);
+        if (Array.isArray(data)) {
+          return data
+            .filter(isEntry)
+            .filter((e) => !OLD_DEFAULTS.some((d) => d.name === e.name && d.score === e.score))
+            .slice(0, MAX_ENTRIES);
+        }
       }
     } catch {
-      // kaputte oder fehlende Daten → Vorbelegung
+      // kaputte oder fehlende Daten → leere Tafel
     }
-    return DEFAULTS.map((e) => ({ ...e }));
+    return [];
   }
 }
 
