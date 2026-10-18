@@ -69,6 +69,8 @@ The same layout in every game:
 
 🖱️ In the hall you can also use the mouse: click a cabinet and your character walks over and starts the game. Walk out through the **EXIT** door to get back to the homepage.
 
+🎶 Next to the sofa stands a **record player**. Press `Enter` there to put on a record and again for the next one (`Shift` stops the music). Six original tracks in the style of 70s disco and funk, 80s synth pop and Italo disco and 90s eurodance. The music keeps playing softly and muffled while you play a game, like it is coming from the hall next door.
+
 ## 🚀 Getting started
 
 Requires [Node.js](https://nodejs.org/) (developed with Node 24).
@@ -91,7 +93,7 @@ The site has two entry points:
 
 - **TypeScript + Vite**, no framework, zero runtime dependencies
 - **Canvas 2D** at a fixed 384×288 resolution, scaled up to fill the window, with a CRT look (scanlines, vignette, neon bloom)
-- **WebAudio** synthesizes every sound effect and loop; there are no audio files
+- **WebAudio** synthesizes every sound effect, loop and record-player track; there are no audio files
 - **localStorage** keeps high scores and settings; nothing is sent to a server
 - **Self-hosted fonts** via Fontsource (Pixelify Sans, Atkinson Hyperlegible)
 
@@ -107,12 +109,14 @@ src/
     loop.ts               fixed-timestep game loop (60 Hz)
     input.ts              keyboard, mouse, gamepad
     sound.ts, sfx.ts      WebAudio synthesis, looping sounds, shared effects
+    music.ts              record player: sequencer and instruments for the hall music
     shell.ts              cabinet flow: title, demo, pause, game over, initials, high scores
     autopilot.ts          "demo player" for attract mode
     font.ts, draw.ts      bitmap font, sprites, pixel-perfect lines
     screen.ts             scaling, CRT effects, fullscreen
     highscores.ts         high score tables
   hall/hall.ts          the walkable arcade hall
+  hall/records.ts       the records in the crate (original songs, notes and chords)
   games/<name>/         one folder per game (index.ts + round.ts, sometimes sprites/sounds)
   games/registry.ts     which cabinets stand where in the hall
   landing/              landing page script and styles
