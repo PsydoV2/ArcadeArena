@@ -7,7 +7,7 @@ import * as C from '../engine/palette';
 import { sfx } from '../engine/sfx';
 import { toggleFullscreen } from '../engine/screen';
 import { DEAD_LOOP, type LoopHandle, type Sound } from '../engine/sound';
-import { SCREEN_H as H, SCREEN_W as W, type CabinetInfo } from '../engine/types';
+import { SCREEN_H as H, SCREEN_W as W, type CabinetInfo, type Rect } from '../engine/types';
 import { RECORDS } from './records';
 
 /** Kachelgröße der Halle. */
@@ -141,6 +141,21 @@ export class Hall {
     this.player = this.frontOf(s);
     this.face = DIRS.up;
     this.cam = this.camTarget();
+  }
+
+  /** Bildschirmchen eines Automaten in Bildschirmpixeln – dort setzt der Zoom an den Automaten an. */
+  screenOf(id: string): Rect | null {
+    const s = this.spots.find((spot) => spot.info.id === id);
+    if (!s) return null;
+    return { x: s.x + 4 - Math.round(this.cam.x), y: s.y + 13 - Math.round(this.cam.y), w: 22, h: 10 };
+  }
+
+  /** Die Automaten links und rechts daneben in derselben Reihe. */
+  neighborsOf(id: string): (CabinetInfo | undefined)[] {
+    const s = this.spots.find((spot) => spot.info.id === id);
+    if (!s) return [];
+    const at = (tx: number) => this.spots.find((o) => o.ty === s.ty && o.tx === tx)?.info;
+    return [at(s.tx - COL_STEP), at(s.tx + COL_STEP)];
   }
 
   // ---------- Aufbau ----------
@@ -454,7 +469,8 @@ export class Hall {
 
   // ---------- Zeichnen ----------
 
-  render(): void {
+  /** `ui = false`: ohne Infofeld, Hinweise und Meldungen (beim Zoom an den Automaten). */
+  render(ui = true): void {
     const g = this.env.g;
     g.fillStyle = '#05030a';
     g.fillRect(0, 0, W, H);
@@ -505,6 +521,7 @@ export class Hall {
       drawText(g, 'RECORD PLAYER', x, y, { color: this.deckColor, align: 'center' });
     }
     g.restore();
+    if (!ui) return;
 
     if (this.near) this.drawPanel(g, this.near);
     else if (this.nearDeck) this.drawDeckPanel(g);

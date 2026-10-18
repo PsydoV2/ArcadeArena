@@ -6,6 +6,13 @@ import type { ScoreBoard } from './highscores';
 export const SCREEN_W = 384;
 export const SCREEN_H = 288;
 
+export interface Rect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
 /** Eintrag für das Steuerungsbild am Automaten. */
 export interface ControlHint {
   type: 'stick' | 'button';

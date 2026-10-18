@@ -7,15 +7,32 @@ body {
 }
 
 #app {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
   width: 100%;
   height: 100%;
 }
 
+/* Lage, Größe und Zoom setzt die CabinetView per JS */
+.crt,
+.cabinet,
+.cabinet-back {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+}
+
+/* Automatengehäuse vor dem Bildschirm: durchs Loch sieht man das Bild, Klicks gehen ans Spiel */
+.cabinet,
+.cabinet-back {
+  pointer-events: none;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+  will-change: transform, opacity;
+}
+
 .crt {
-  position: relative;
+  will-change: transform, opacity;
   border-radius: 18px;
   overflow: hidden;
   box-shadow:

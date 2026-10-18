@@ -88,7 +88,7 @@ const sfx = {
     s.noise({ dur: [0.6, 0.4, 0.25][size], freq: [1200, 2200, 3500][size], to: 80, vol: [0.5, 0.4, 0.3][size] });
   },
   beat(s: Sound, high: boolean) {
-    s.tone({ freq: high ? 62 : 55, dur: 0.1, type: 'square', vol: 0.3 });
+    s.tone({ freq: high ? 160 : 130, to: 45, dur: 0.14, type: 'sine', vol: 0.55 });
   },
   shipBoom(s: Sound) {
     s.noise({ dur: 1.2, freq: 1500, to: 60, vol: 0.6 });
