@@ -56,6 +56,7 @@ const ld = {
   operatingSystem: 'Web browser',
   isAccessibleForFree: true,
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+  author: { '@id': `${SITE}/#author` },
   isPartOf: { '@id': `${SITE}/#arcade` },
 };
 const ldText = JSON.stringify(ld, null, 2)

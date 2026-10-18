@@ -1,18 +1,27 @@
+import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
 
 /** Öffentliche Adresse der Seite (für sitemap.xml, robots.txt, llms.txt). */
 const SITE = 'https://arcadearena.sfalter.de';
 
+/** Datum des letzten Commits, der die Pfade geändert hat (für ein ehrliches lastmod). */
+function lastChanged(...paths: string[]): string {
+  try {
+    const date = execFileSync('git', ['log', '-1', '--format=%cs', '--', ...paths], { encoding: 'utf8' }).trim();
+    if (date) return date;
+  } catch {}
+  return new Date().toISOString().slice(0, 10);
+}
+
 /** Erzeugt sitemap.xml, robots.txt und llms.txt mit der echten Seitenadresse. */
 function seoFiles(site: string): Plugin {
-  const today = new Date().toISOString().slice(0, 10);
   const files: Record<string, string> = {
     'robots.txt': `User-agent: *\nAllow: /\n\nSitemap: ${site}/sitemap.xml\n`,
     'sitemap.xml': `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>${site}/</loc><lastmod>${today}</lastmod><priority>1.0</priority></url>
-  <url><loc>${site}/play/</loc><lastmod>${today}</lastmod><priority>0.8</priority></url>
+  <url><loc>${site}/</loc><lastmod>${lastChanged('index.html')}</lastmod></url>
+  <url><loc>${site}/play/</loc><lastmod>${lastChanged('play', 'src')}</lastmod></url>
 </urlset>
 `,
     'llms.txt': `# Arcade Arena
@@ -71,6 +80,7 @@ export default defineConfig({
         play: resolve(__dirname, 'play/index.html'),
         impressum: resolve(__dirname, 'impressum/index.html'),
         datenschutz: resolve(__dirname, 'datenschutz/index.html'),
+        notFound: resolve(__dirname, '404.html'),
       },
     },
   },

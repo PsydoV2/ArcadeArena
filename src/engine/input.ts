@@ -1,4 +1,6 @@
-export type Action = 'left' | 'right' | 'up' | 'down' | 'a' | 'b' | 'start' | 'back';
+import { SCREEN_H, SCREEN_W } from './types';
+
+export type Action ='left' | 'right' | 'up' | 'down' | 'a' | 'b' | 'start' | 'back';
 
 /** Einheitliche Belegung für alle Spiele: Pfeile/WASD + 2 Aktionstasten. */
 const BINDINGS: Record<Action, string[]> = {
@@ -67,8 +69,8 @@ export class Input implements Controls {
 
     const toScreen = (e: MouseEvent) => {
       const r = canvas.getBoundingClientRect();
-      this.mouse.x = ((e.clientX - r.left) * canvas.width) / r.width;
-      this.mouse.y = ((e.clientY - r.top) * canvas.height) / r.height;
+      this.mouse.x = ((e.clientX - r.left) * SCREEN_W) / r.width;
+      this.mouse.y = ((e.clientY - r.top) * SCREEN_H) / r.height;
     };
     canvas.addEventListener('mousemove', (e) => {
       toScreen(e);

@@ -1,4 +1,4 @@
-import { strokeRect } from '../engine/draw';
+import { RES, strokeRect, useHiRes } from '../engine/draw';
 import { drawText, textWidth } from '../engine/font';
 import { ScoreBoard, type ScoreEntry } from '../engine/highscores';
 import type { Input } from '../engine/input';
@@ -114,8 +114,9 @@ export class Hall {
       const tx = FIRST_COL + (index % PER_ROW) * COL_STEP;
       const ty = 2 + Math.floor(index / PER_ROW) * ROW_STEP;
       const screen = document.createElement('canvas');
-      screen.width = 80;
-      screen.height = 36;
+      screen.width = 80 * RES;
+      screen.height = 36 * RES;
+      useHiRes(screen.getContext('2d')!);
       return { info, index, tx, ty, x: tx * T + 1, y: (ty + 2) * T - CAB_H, screen };
     });
     this.buildWalls();
@@ -546,7 +547,7 @@ export class Hall {
     // Bildschirm mit laufender Demo
     g.fillStyle = '#08050f';
     g.fillRect(x + 3, y + 11, 24, 14);
-    g.drawImage(s.screen, 0, 0, 80, 36, x + 4, y + 13, 22, 10);
+    g.drawImage(s.screen, x + 4, y + 13, 22, 10);
     g.fillStyle = 'rgba(255,255,255,0.12)';
     g.fillRect(x + 5, y + 12, 7, 1);
 
@@ -630,7 +631,7 @@ export class Hall {
 
     g.fillStyle = '#2c2050';
     g.fillRect(6, PANEL_Y + 6, 86, 42);
-    g.drawImage(s.screen, 9, PANEL_Y + 9);
+    g.drawImage(s.screen, 9, PANEL_Y + 9, 80, 36);
     const best = this.best[s.index];
     drawText(g, `HI ${best?.name ?? '---'} ${best?.score ?? 0}`, 49, PANEL_Y + 54, { color: info.accent, align: 'center' });
 

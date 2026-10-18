@@ -1,3 +1,5 @@
+import { pixelArtCanvas } from '../../engine/draw';
+
 /** Kachelgröße in Pixeln. */
 export const T = 8;
 export const MAZE_COLS = 28;
@@ -137,5 +139,5 @@ export function renderWalls(color: string, doorColor: string): HTMLCanvasElement
   for (let r = 0; r < MAZE_ROWS; r++) {
     for (let cc = 0; cc < MAZE_COLS; cc++) if (LAYOUT[r][cc] === '-') g.fillRect(cc * T, r * T + 3, T, 2);
   }
-  return c;
+  return pixelArtCanvas(c);
 }

@@ -1,3 +1,4 @@
+import { RES, useHiRes } from './draw';
 import { SCREEN_H, SCREEN_W } from './types';
 
 export interface Screen {
@@ -8,15 +9,15 @@ export interface Screen {
 }
 
 /**
- * Canvas mit fester Auflösung, so groß wie möglich skaliert, plus CRT-Effekte:
+ * Canvas mit fester Auflösung (intern RES-fach fein gerastert), so groß wie möglich skaliert, plus CRT-Effekte:
  * Bloom (weiches Leuchten heller Pixel), Scanlines und Vignette.
  */
 export function createScreen(root: HTMLElement): Screen {
   const frame = document.createElement('div');
   frame.className = 'crt';
   const canvas = document.createElement('canvas');
-  canvas.width = SCREEN_W;
-  canvas.height = SCREEN_H;
+  canvas.width = SCREEN_W * RES;
+  canvas.height = SCREEN_H * RES;
   const bloom = document.createElement('canvas');
   bloom.className = 'crt-bloom';
   bloom.width = SCREEN_W / 2;
@@ -27,7 +28,7 @@ export function createScreen(root: HTMLElement): Screen {
   root.append(frame);
 
   const g = canvas.getContext('2d')!;
-  g.imageSmoothingEnabled = false;
+  useHiRes(g);
   const bg = bloom.getContext('2d')!;
 
   const fit = () => {

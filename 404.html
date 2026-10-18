@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page not found | Arcade Arena</title>
+    <meta name="robots" content="noindex, follow" />
+    <meta name="theme-color" content="#0b0816" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="manifest" href="/site.webmanifest" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="nav">
+      <a class="nav__logo" href="/" aria-label="Arcade Arena home">ARCADE ARENA</a>
+      <a class="btn btn--small nav__cta" href="/play/">Enter the arcade</a>
+    </header>
+
+    <main id="main" class="legal">
+      <p class="eyebrow">Error 404</p>
+      <h1>Game over: this page does not exist.</h1>
+      <p>
+        The address may be mistyped, or the page has moved. Every cabinet is still waiting for you in the arcade hall.
+      </p>
+      <div class="hero__actions">
+        <a class="btn" href="/play/">Enter the arcade</a>
+        <a class="btn btn--ghost" href="/">Back to the homepage</a>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p class="footer__brand">ARCADE ARENA</p>
+      <ul class="footer__links">
+        <li><a href="/impressum/">Impressum</a></li>
+        <li><a href="/datenschutz/">Datenschutz</a></li>
+        <li><button class="footer__link" type="button" data-consent-open>Privacy settings</button></li>
+      </ul>
+    </footer>
+
+    <section class="consent" data-consent-banner aria-labelledby="consent-title" hidden>
+      <div class="consent__text">
+        <h2 id="consent-title">Can we count your visit?</h2>
+        <p>
+          With your permission we use Umami, a privacy-friendly analytics tool hosted on our own server, to record how
+          visitors use the site and which games get played. No ads, no tracking across other websites. You can change your
+          choice any time under "Privacy settings" at the bottom of the page. Details:
+          <a href="/datenschutz/">Datenschutzerklärung</a>.
+        </p>
+      </div>
+      <div class="consent__actions">
+        <button class="btn btn--small" type="button" data-consent="granted">Allow</button>
+        <button class="btn btn--small btn--ghost" type="button" data-consent="denied">Decline</button>
+      </div>
+    </section>
+
+    <script type="module" src="/src/legal/main.ts"></script>
+  </body>
+</html>
