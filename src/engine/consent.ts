@@ -2,7 +2,7 @@
 
 const KEY = 'arcade-arena:analytics-consent';
 /** Besucherzählung (script.js) und Sitzungsaufzeichnung (recorder.js). */
-const UMAMI_SCRIPTS = ['https://umami.sfalter.de/script.js', 'https://umami.sfalter.de/recorder.js'];
+const UMAMI_SCRIPTS = ['https://webstats.sfalter.de/script.js', 'https://webstats.sfalter.de/recorder.js'];
 const UMAMI_ID = 'fd0a8fa5-e7be-4a75-ad12-d2fbfc30c350';
 
 export type Consent = 'granted' | 'denied';
